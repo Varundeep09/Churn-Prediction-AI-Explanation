@@ -4,10 +4,11 @@ __pycache__/
 *.pyc
 .env
 .DS_Store
-*.egg-info/
+catboost_info/
 
-# Binary Model Artifacts (reproducible via model/preprocess.py and model/train.py)
-model/*.pkl
+# Intermediate train/test split data files
+model/X_*.pkl
+model/y_*.pkl
 
 # SQLite Database Binary (reproducible via sql/build_database.py)
 sql/churn.db

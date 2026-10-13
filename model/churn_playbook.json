@@ -6,7 +6,7 @@
     "risk_level": "Critical",
     "recommended_action": "Priority retention outreach within 48 hours; offer contract upgrade discount or loyalty credit; assign dedicated account representative.",
     "rationale": "High revenue accounts in their first year with month-to-month flexibility have the highest cumulative attrition rate and highest revenue risk.",
-    "supporting_data": "47.68% 1st-year churn rate; 814 target accounts identified in SQL representing $323,148/month in revenue at stake."
+    "supporting_data": "47.68% 1st-year churn rate; 814 target accounts identified in SQL representing $67,418.90/month in revenue at immediate risk (from $323,148.10/month total high-value cohort)."
   },
   {
     "segment_id": 2,

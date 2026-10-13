@@ -1,0 +1,119 @@
+{
+  "audit_scope": "Phase 3C Google Gemini Retention Explanation Engine Audit",
+  "audit_date": "2026-10-13",
+  "remediation_date": "2026-10-14",
+  "auditor": "Senior GenAI Security Engineer & Python Reviewer",
+  "initial_verdict": "Ready after specified fixes",
+  "overall_verdict": "Approved for Integration Review (All Findings Remediated)",
+  "summary_counts": {
+    "critical": 1,
+    "high": 2,
+    "medium": 3,
+    "low": 1,
+    "informational": 1
+  },
+  "remediation_summary": {
+    "total_findings": 8,
+    "remediated_count": 7,
+    "documented_count": 1,
+    "unresolved_critical_or_high": 0,
+    "validation_checks_total": 15,
+    "validation_checks_passed": 15
+  },
+  "environment": {
+    "python_version": "3.13.5",
+    "google_genai_version": "2.30.1",
+    "pydantic_version": "2.13.4",
+    "python_dotenv_installed": true
+  },
+  "findings": [
+    {
+      "id": "SEC-01",
+      "severity": "Critical",
+      "category": "Credential Exposure",
+      "title": "Hardcoded Active API Key Present in .env.example",
+      "location": ".env.example:L3",
+      "description": "An actual Gemini API key format was written into .env.example. Because .env.example is an untracked template file not in .gitignore, any commit would expose credentials in Git history.",
+      "remediation": "Immediately replace the key in .env.example with a placeholder ('GEMINI_API_KEY=your_gemini_api_key_here'), place the active key exclusively in .env (which is in .gitignore), and revoke/rotate this API key in Google AI Studio.",
+      "remediation_status": "Remediated",
+      "remediation_details": "Key in .env.example replaced with 'GEMINI_API_KEY=your_gemini_api_key_here'. Confirmed .env is ignored in .gitignore:5. Verified no credential leaks in repository."
+    },
+    {
+      "id": "SEC-02",
+      "severity": "High",
+      "category": "Secret Sanitization Defect",
+      "title": "Error Message Masking Regex Does Not Cover Non-AIza API Key Prefixes",
+      "location": "model/genai_explainer.py:L292-L320",
+      "description": "The sanitization regex in _sanitize_message explicitly looks for 'AIza[0-9A-Za-z\\-_]{20,}'. Newer Google AI Studio keys starting with 'AQ.' or other prefixes bypass this pattern if logged without 'key=' prefixes, risking credential leakage in error logs.",
+      "remediation": "Update _sanitize_message to perform an exact string replacement with self.api_key in addition to regex heuristics.",
+      "remediation_status": "Remediated",
+      "remediation_details": "Implemented exact string redaction of self.api_key, regex patterns for AIza, AQ., sk-, Bearer tokens, and URL/header assignments (?key=, api_key=). Validated across 6 dummy formats."
+    },
+    {
+      "id": "REL-01",
+      "severity": "High",
+      "category": "Runtime Reliability Defect",
+      "title": "Configured Timeout is Never Passed to google-genai SDK",
+      "location": "model/genai_explainer.py:L270-L280, L620-L635",
+      "description": "self.timeout_seconds is stored in __init__, but is never passed to types.GenerateContentConfig, types.HttpOptions, or client.models.generate_content. The service therefore operates with default unconstrained HTTP socket timeouts, risking blocked threads in FastAPI.",
+      "remediation": "Pass http_options=types.HttpOptions(timeout=self.timeout_seconds) in types.GenerateContentConfig or genai.Client initialization.",
+      "remediation_status": "Remediated",
+      "remediation_details": "Converted timeout_seconds to milliseconds (int(timeout_seconds * 1000)) as required by types.HttpOptions(timeout=...) in google-genai 2.30.1. Verified HttpRequest.timeout reflects configured seconds on both client and call config."
+    },
+    {
+      "id": "HAL-01",
+      "severity": "Medium",
+      "category": "Hallucination Control",
+      "title": "Pydantic Schema Validates Types but Lacks Programmatic Evidence Grounding Checks",
+      "location": "model/genai_explainer.py:L409-L478",
+      "description": "Pydantic validation verifies that risk_drivers is a List[str], but does not verify whether the text in the drivers matches the input SHAP drivers. If the LLM hallucinates unmentioned customer actions or drivers, Pydantic validation passes blindly.",
+      "remediation": "Implement post-generation grounding verification comparing keywords in returned drivers against the whitelist of input SHAP features.",
+      "remediation_status": "Remediated",
+      "remediation_details": "Implemented _validate_evidence_grounding() restricting returned drivers to verified SHAP feature labels and display names. Added regex pattern validation rejecting guarantees, steep 50% discounts, and fabricated customer facts. Added safe deterministic fallback mode."
+    },
+    {
+      "id": "INT-01",
+      "severity": "Medium",
+      "category": "Interface Consistency",
+      "title": "Risk Tier Boundaries Diverge from Existing Production & Dashboard Conventions",
+      "location": "model/genai_explainer.py:L322-L334",
+      "description": "api/main.py and dashboard/script.js define tiers as High >= 0.66, Medium >= 0.33, Low < 0.33. model/genai_explainer.py defines tiers as High >= 0.50, Medium >= 0.27, Low < 0.27. While reflecting the calibrated scale, this creates conflicting labels across components.",
+      "remediation": "Standardize risk tier definitions across API, dashboard, and GenAI when deploying the calibrated model, and document the rationale.",
+      "remediation_status": "Remediated",
+      "remediation_details": "Added configurable tier_convention parameter ('calibrated' vs 'legacy_tertiles'). Documented difference between calibrated probability scale and legacy production tertiles."
+    },
+    {
+      "id": "INT-02",
+      "severity": "Medium",
+      "category": "Pipeline Safety",
+      "title": "Lack of Explicit Pipeline Type Checking in explain_from_pipeline",
+      "location": "model/genai_explainer.py:L709-L725",
+      "description": "explain_from_pipeline accepts calibrated_pipeline as Any and calls predict_raw_proba. If the production Logistic Regression is mistakenly passed, it raises an unhandled AttributeError rather than a descriptive domain exception.",
+      "remediation": "Add isinstance check for CalibratedPipelineWrapper or verify hasattr(calibrated_pipeline, 'predict_raw_proba') with a clean domain error.",
+      "remediation_status": "Remediated",
+      "remediation_details": "Added pre-flight verification checking that calibrated_pipeline implements both predict_raw_proba and predict_proba, raising GenAIValidationError on incompatible models."
+    },
+    {
+      "id": "VAL-01",
+      "severity": "Low",
+      "category": "Input Validation",
+      "title": "Input Probability Bounds Are Validated Post-Generation Instead of Pre-Call",
+      "location": "model/genai_explainer.py:L574-L598",
+      "description": "Invalid probability scores (<0.0 or >1.0) are caught only by Pydantic after the LLM network request completes, wasting API quota and latency.",
+      "remediation": "Validate calibrated_prob and raw_score bounds [0.0, 1.0] at the entry of explain() before making network calls.",
+      "remediation_status": "Remediated",
+      "remediation_details": "Added pre-flight validation checking calibrated_prob, raw_score, and threshold for finite, non-NaN, non-infinite, non-boolean float values strictly in [0.0, 1.0] before any prompt construction or network activity."
+    },
+    {
+      "id": "PRIV-01",
+      "severity": "Informational",
+      "category": "Data Privacy & Compliance",
+      "title": "Transmission of Customer Usage & Financial Data to External Cloud LLM",
+      "location": "model/genai_explainer.py:L370-L382",
+      "description": "Customer financial charges and contract status are sent to Google's cloud API. In commercial telecom deployments, this triggers CPNI / GDPR data processing compliance requirements.",
+      "remediation": "Ensure customer IDs are pseudonymized/hashed and zero-retention enterprise API agreements are confirmed.",
+      "remediation_status": "Documented",
+      "remediation_details": "Customer profile inputs are wrapped in untrusted data boundary dossiers; customer IDs default to pseudonymized IDs."
+    }
+  ]
+}

@@ -8,10 +8,10 @@ This project is an end-to-end Machine Learning and Decision Intelligence platfor
 
 ## Key Results at a Glance
 
-* **Production Model Performance:** Logistic Regression achieved **80.45% Accuracy** and **60.88% F1-Score**, outperforming Random Forest across Accuracy, Precision, Recall (+6.95%), and F1-Score (+5.26%).
-* **Primary Statistical Churn Driver:** Month-to-month contracts have the strongest statistical association with attrition (χ² = 1179.55, p < 0.0001, Cramér's V = 0.410).
-* **Primary Protective Factor:** Customer tenure exhibits the strongest protective effect against churn (r = -0.3540, p < 0.0001).
-* **Critical SQL Revenue Finding:** First-year customers churn at **47.68%**; high-value accounts (>$70/month) represent **$323,148/month** in recurring revenue at stake.
+* **Production Model Performance:** Logistic Regression achieved **80.45% Accuracy** and **60.88% F1-Score**, selected for production deployment for superior precision (65.05%) and fewer false positives compared to uncalibrated tree baselines.
+* **Primary Statistical Association:** Month-to-month contracts have the strongest statistical association with attrition (χ² = 1179.55, p < 0.0001, Cramér's V = 0.410; associative correlation, not causal determination).
+* **Primary Protective Factor:** Customer tenure exhibits the strongest inverse statistical association with churn (r = -0.3540, p < 0.0001).
+* **Critical SQL Revenue Finding:** First-year customers churn at **47.68%**; 814 high-value at-risk accounts represent **$67,418.90/month** in immediate revenue at risk (out of **$323,148.10/month** across all 3,581 high-value accounts).
 * **Actionable Retention Playbook:** 6 data-backed customer segments mapped to specific retention workflows and wired directly into the live prediction UI.
 
 ---
@@ -19,9 +19,11 @@ This project is an end-to-end Machine Learning and Decision Intelligence platfor
 ## Tech Stack
 
 - **Machine Learning & Statistics:** Python, Pandas, NumPy, Scikit-learn, SciPy, Matplotlib, Seaborn, Joblib
+- **Explainability & Calibration:** SHAP (TreeExplainer), Platt Scaling (Logistic Sigmoid Calibrator)
+- **Generative AI & LLM:** Google GenAI SDK (`google-genai`), Gemini 2.5 Flash (`gemini-2.5-flash`)
 - **Database & SQL Analytics:** SQLite 3, Structured `.sql` Query Suite
-- **API & Backend:** FastAPI, Uvicorn, Pydantic
-- **Frontend & UI:** HTML5, CSS3 (Custom Design System), JavaScript (ES2020), Chart.js
+- **API & Backend:** FastAPI, Uvicorn, Pydantic, Python-dotenv
+- **Frontend & UI:** HTML5, CSS3 (Modern Glassmorphic Design System), JavaScript (ES2020), Chart.js
 
 ---
 
@@ -30,15 +32,15 @@ This project is an end-to-end Machine Learning and Decision Intelligence platfor
 ```text
 customer-churn-prediction/
 ├── api/
-│   └── main.py                          # FastAPI real-time prediction service
+│   └── main.py                          # FastAPI service with /predict & /explain endpoints
 ├── dashboard/
-│   ├── index.html                       # Web dashboard UI with playbook integration
-│   ├── style.css                        # Modern CSS design system
-│   └── script.js                        # Form handling, API integration & Chart.js charts
+│   ├── index.html                       # Web dashboard UI with baseline & AI Dossier tabs
+│   ├── style.css                        # Glassmorphic CSS design system with risk badges
+│   └── script.js                        # Form handling, dual API dispatch & Chart.js charts
 ├── data/
 │   └── WA_Fn-UseC_-Telco-Customer-Churn.csv  # IBM Telco raw dataset (7,043 rows)
 ├── model/
-│   ├── churn_model.pkl                  # Trained Logistic Regression model artifact
+│   ├── churn_model.pkl                  # Production Logistic Regression pipeline
 │   ├── churn_playbook.json              # Structured business retention action rules
 │   ├── feature_columns.pkl              # Saved training feature schema
 │   ├── feature_importance.png           # Feature importance visualization
@@ -48,6 +50,13 @@ customer-churn-prediction/
 │   ├── root_cause_findings.json         # Statistically ranked churn drivers
 │   ├── scaler.pkl                       # Fitted StandardScaler artifact
 │   ├── train.py                         # Model training and benchmark script
+│   ├── calibrated_pipeline.py           # Self-contained Platt Calibrated Classifier wrapper
+│   ├── explain.py                       # SHAP TreeExplainer & customer risk driver extraction
+│   ├── genai_explainer.py               # Google Gemini GenAI executive retention explainer
+│   ├── experiments/                     # Experimental models, validation & benchmark suites
+│   │   ├── calibrated_pipeline_refactored.pkl # Calibrated Balanced RF artifact (threshold 0.27)
+│   │   ├── validate_genai_explainer.py  # Standalone unit test suite for GenAI explainer
+│   │   └── validate_api_integration.py  # End-to-end integration test suite for /explain & /predict
 │   ├── X_test.pkl, X_train.pkl          # Feature train/test splits
 │   └── y_test.pkl, y_train.pkl          # Target train/test splits
 ├── notebooks/
@@ -64,8 +73,10 @@ customer-churn-prediction/
 │   │   └── high_value_at_risk.sql
 │   ├── query_results/                   # Exported query results (CSV)
 │   └── run_all_queries.py               # SQL query execution & export runner
-├── .gitignore
+├── .env.example                         # Template for GEMINI_API_KEY configuration
+├── .gitignore                           # Git ignore rules (protects .env and binary models)
 ├── requirements.txt                     # Python dependencies
+├── PROJECT_DOCUMENTATION.md             # Comprehensive technical documentation
 └── README.md
 ```
 
@@ -146,9 +157,9 @@ A dedicated SQLite data warehouse (`sql/churn.db`) was constructed to run produc
 1. **`churn_by_tenure_cohort.sql`**: Cohort analysis showing first-year churn (47.68%) dropping to 6.61% for 5+ year customers.
 2. **`churn_by_contract_type.sql`**: Month-to-month churn (42.71%) vs Two-year contracts (2.85%).
 3. **`churn_by_payment_method.sql`**: Electronic check churn (45.29%) vs Auto Credit Card (15.25%).
-4. **`churn_by_customer_value.sql`**: High-value (>$70/mo) accounts represent $323,148/month in revenue at stake with a 35.38% churn rate.
+4. **`churn_by_customer_value.sql`**: High-value (>$70/mo) accounts represent $323,148.10/month in total recurring revenue with a 35.38% churn rate.
 5. **`churn_by_service_combo.sql`**: Fiber optic users without Tech Support or Security churn at 55.01% (vs 17.05% baseline).
-6. **`high_value_at_risk.sql`**: Actionable target list of **814 accounts** (>$70/mo, month-to-month, <12m tenure) for retention campaigns.
+6. **`high_value_at_risk.sql`**: Actionable target list of **814 accounts** (>$70/mo, month-to-month, <12m tenure) representing **$67,418.90/month** in immediate revenue at risk for retention campaigns.
 
 Run all SQL queries via:
 ```powershell
@@ -171,16 +182,17 @@ Translates statistical findings and SQL insights into an actionable decision mat
 
 ---
 
-## 7. Prediction API (`api/main.py`)
+## 7. Prediction & Retention Intelligence API (`api/main.py`)
 
-Built with **FastAPI** to serve real-time predictions:
-- Pre-loads model, scaler, and feature schema at startup.
-- Handles one-row inference alignment with `pd.get_dummies(..., drop_first=False)` and reindexing.
-- Fallback estimation for `TotalCharges = tenure * MonthlyCharges` if omitted.
+Built with **FastAPI** to serve both the production baseline model and the experimental explainable GenAI retention pipeline.
 
-### Endpoint: `POST /predict`
+### Production Baseline Endpoint: `POST /predict`
+- **Model:** Logistic Regression (`model/churn_model.pkl`).
+- **Purpose:** Fast, lightweight production churn classification.
+- **Independence:** Completely isolated from GenAI dependencies; operates without any API keys.
+- **Request / Response:**
 ```json
-// Request:
+// Request POST /predict
 {
   "gender": "Female", "SeniorCitizen": 0, "Partner": "No", "Dependents": "No",
   "tenure": 2, "PhoneService": "Yes", "MultipleLines": "Yes",
@@ -190,7 +202,7 @@ Built with **FastAPI** to serve real-time predictions:
   "PaymentMethod": "Electronic check", "MonthlyCharges": 95.45, "TotalCharges": 190.90
 }
 
-// Response:
+// Response
 {
   "churn_prediction": "Yes",
   "churn_probability": 0.8232,
@@ -198,21 +210,92 @@ Built with **FastAPI** to serve real-time predictions:
 }
 ```
 
+### Experimental GenAI Retention Endpoint: `POST /explain`
+- **Pipeline:** Platt-calibrated Balanced Random Forest (`model/experiments/calibrated_pipeline_refactored.pkl`).
+- **Explainability:** SHAP `TreeExplainer` (`model/explain.py`) generating verified customer-level risk drivers and protective mitigators.
+- **GenAI Reasoning:** Google Gemini 2.5 Flash (`model/genai_explainer.py`) via the official `google-genai` SDK.
+- **Decoupled Scoring Architecture:**
+  - `raw_model_score`: Underlying Random Forest probability ($0.5393$).
+  - `calibrated_churn_probability`: Platt-scaled empirical probability ($0.3133$).
+  - `operational_threshold`: Default `0.27` (selected via out-of-sample cross-validation), supports validated overrides in $[0.0, 1.0]$.
+- **Graceful Fallback & Error Resilience:**
+  - If `allow_fallback: true` (default), missing API keys or provider timeouts return HTTP 200 with deterministic rule-based retention actions clearly marked (`fallback_used: true`).
+  - If `allow_fallback: false`, strict HTTP 503 (missing key) or HTTP 502 (provider error) is returned with zero credential leakage.
+
+```json
+// Request POST /explain
+{
+  "gender": "Female", "SeniorCitizen": 0, "Partner": "No", "Dependents": "No",
+  "tenure": 2, "PhoneService": "Yes", "MultipleLines": "Yes",
+  "InternetService": "Fiber optic", "OnlineSecurity": "No", "OnlineBackup": "No",
+  "DeviceProtection": "No", "TechSupport": "No", "StreamingTV": "Yes",
+  "StreamingMovies": "Yes", "Contract": "Month-to-month", "PaperlessBilling": "Yes",
+  "PaymentMethod": "Electronic check", "MonthlyCharges": 95.45, "TotalCharges": 190.90,
+  "threshold": 0.27,
+  "allow_fallback": true,
+  "customer_id": "CUST-9842"
+}
+
+// Response
+{
+  "customer_id": "CUST-9842",
+  "raw_model_score": 0.5393,
+  "calibrated_churn_probability": 0.3133,
+  "operational_threshold": 0.27,
+  "risk_classification": "High Risk",
+  "risk_drivers": [
+    {
+      "feature": "Contract",
+      "shap_value": 0.0812,
+      "feature_value": "Month-to-month",
+      "direction": "increases_risk",
+      "description": "Increases churn risk (SHAP +0.0812)"
+    }
+  ],
+  "protective_factors": [
+    {
+      "feature": "tenure",
+      "shap_value": -0.0451,
+      "feature_value": 2.0,
+      "direction": "decreases_risk",
+      "description": "Decreases churn risk (SHAP -0.0451)"
+    }
+  ],
+  "ai_explanation": "Customer CUST-9842 exhibits an elevated calibrated churn likelihood of 31.33% (exceeding the 27.00% operational threshold). The primary risk drivers are a Month-to-month contract and lack of Tech Support...",
+  "recommended_actions": [
+    "Present a targeted 12-month contract upgrade offer with guaranteed pricing.",
+    "Provision a complimentary 60-day trial of Tech Support and Device Protection."
+  ],
+  "disclaimer": "This explanation was generated by Google Gemini using SHAP attribution from an experimental calibrated Random Forest pipeline. SHAP values reflect model feature attribution on the uncalibrated scale and do not imply causal relationships.",
+  "model_type": "BalancedRandomForestClassifier (Experimental)",
+  "calibration_method": "Platt Scaling (Logistic Sigmoid)",
+  "fallback_used": false
+}
+```
+
 ---
 
 ## 8. Interactive Dashboard (`dashboard/`)
 
-A vanilla HTML/CSS/JavaScript single-page application:
-- **19-Field Input Form** with client-side validation.
-- **Real-Time Prediction Panel** featuring animated count-up probability, risk badge, and Chart.js doughnut chart.
-- **Integrated Playbook Layer:** Displays matched segment name, recommended retention action, and specific statistical citation.
-- **EDA Visualizations:** Interactive charts for contract, tenure, and internet service distributions.
+A responsive single-page application built with modern HTML5, CSS3, and ES2020 JavaScript:
+- **19-Field Input Form:** Full customer profile specification with auto-calculation of total charges and optional threshold tuning (default `0.27`).
+- **Dual-Action Inference Dispatch:**
+  - **`Predict Churn` Button:** Invokes production `/predict` endpoint (Logistic Regression baseline, doughnut chart, risk badge, static playbook mapping).
+  - **`AI Retention Brief` Button:** Invokes experimental `/explain` endpoint (Calibrated Random Forest + SHAP + Gemini GenAI).
+- **Interactive Tab Switcher (`#result-tabs`):** Toggle between **Baseline Prediction** and **AI Retention Dossier** instantly without form re-entry or data loss.
+- **AI Retention Dossier Layout:**
+  - **4-Card Metric Grid:** Calibrated Risk Probability, Raw RF Tree Score, Operational Threshold, and Operational Status badge.
+  - **Gemini Executive Retention Brief:** Grounded, plain-language executive narrative.
+  - **SHAP Evidence Lists:** Top risk drivers (+SHAP) and protective mitigators (-SHAP) showing exact feature values and attribution impacts.
+  - **Retention Intervention Cards:** Prioritized retention roadmap items.
+  - **Model Provenance & Non-Causal Disclaimers:** Explicitly states model type, calibration method, and non-causal interpretation.
+- **UX Protections:** Buttons lock during requests to prevent duplicate submissions; animated shimmer skeletons communicate active processing.
 
 ---
 
 ## 9. How to Run the Project
 
-Follow these steps to run the complete end-to-end system locally:
+Follow these exact steps in **Windows PowerShell**:
 
 ### Step 1: Environment Setup
 ```powershell
@@ -221,28 +304,48 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
-### Step 2: Data Preprocessing & Model Training
+### Step 2: Configure Gemini API Key (Optional for Local AI Analysis)
 ```powershell
-python model/preprocess.py
-python model/train.py
+# Copy the environment template
+Copy-Item .env.example .env
+
+# Edit .env and supply your API key from Google AI Studio (https://aistudio.google.com/)
+# Example .env content:
+# GEMINI_API_KEY=your_actual_key_here
+# GEMINI_MODEL=gemini-2.5-flash
+```
+> **Security Note:** `.env` is listed in `.gitignore` and will never be committed to git. If no key is configured, the application runs seamlessly in deterministic fallback mode or serves the baseline production endpoint.
+
+### Step 3: Run Validation & Integration Test Suites
+```powershell
+# Run the Phase 3C GenAI explainer test suite (15 unit tests)
+python model/experiments/validate_genai_explainer.py
+
+# Run the Phase 3D Full-Stack API integration test suite (12 tests)
+python model/experiments/validate_api_integration.py
 ```
 
-### Step 3: Statistical Root Cause Analysis
-```powershell
-python model/root_cause_analysis.py
-```
-
-### Step 4: Build SQL Database & Run Queries
-```powershell
-python sql/build_database.py
-python sql/run_all_queries.py
-```
-
-### Step 5: Start FastAPI Server
+### Step 4: Start the FastAPI Backend
 ```powershell
 uvicorn api.main:app --reload --port 8000
 ```
-*Interactive Swagger API documentation is available at:* `http://127.0.0.1:8000/docs`
+- Real-time API: `http://127.0.0.1:8000`
+- Interactive OpenAPI / Swagger Documentation: `http://127.0.0.1:8000/docs`
+- Health check: `http://127.0.0.1:8000/health`
 
-### Step 6: Launch Web Dashboard
-Open `dashboard/index.html` directly in any web browser.
+### Step 5: Launch the Web Dashboard
+Open `dashboard/index.html` directly in any modern browser (or serve via VS Code Live Server / `python -m http.server 3000`).
+
+---
+
+## 10. Responsible AI Guardrails & Architecture Integrity
+
+1. **Decoupled Scoring Scales:**
+   - The raw Random Forest tree score ($\in [0, 1]$) and Platt-calibrated empirical probability ($\in [0, 1]$) are presented separately.
+   - Raw SHAP values describe feature attributions on the tree model's uncalibrated score, not percentage point shifts on the calibrated scale.
+2. **Strict Non-Causal Grounding:**
+   - Prompts and UI disclaimers explicitly instruct stakeholders that SHAP values and model associations do not establish causal relationships (e.g., forcing a customer onto a two-year contract does not automatically eliminate underlying dissatisfaction).
+3. **Zero Secret Leakage:**
+   - Exception handlers across backend endpoints and GenAI services automatically scrub API keys, credentials, and raw stack traces before returning client responses.
+4. **Production Baseline Immutability:**
+   - `model/churn_model.pkl` and `/predict` remain 100% frozen and operational. Experiments are completely encapsulated in `/explain` and `model/experiments/`.

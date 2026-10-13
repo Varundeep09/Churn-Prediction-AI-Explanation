@@ -1,0 +1,51 @@
+{
+  "model_name": "Random Forest (Balanced, max_depth=8)",
+  "holdout_sample_size": 1407,
+  "positive_churn_samples": 374,
+  "default_threshold_0_50": {
+    "threshold": 0.5,
+    "accuracy": 0.7392,
+    "precision": 0.5059,
+    "recall": 0.7995,
+    "f1_score": 0.6197,
+    "roc_auc": 0.839,
+    "pr_auc": 0.645,
+    "confusion_matrix": [
+      [
+        741,
+        292
+      ],
+      [
+        75,
+        299
+      ]
+    ],
+    "tn": 741,
+    "fp": 292,
+    "fn": 75,
+    "tp": 299
+  },
+  "optimized_threshold": {
+    "threshold": 0.52,
+    "accuracy": 0.7456,
+    "precision": 0.5141,
+    "recall": 0.7781,
+    "f1_score": 0.6191,
+    "roc_auc": 0.839,
+    "pr_auc": 0.645,
+    "confusion_matrix": [
+      [
+        758,
+        275
+      ],
+      [
+        83,
+        291
+      ]
+    ],
+    "tn": 758,
+    "fp": 275,
+    "fn": 83,
+    "tp": 291
+  }
+}

@@ -1,0 +1,1385 @@
+{
+  "profile_1_high_risk": {
+    "churn_prediction": "Yes",
+    "churn_probability": 0.9002,
+    "risk_level": "High",
+    "decision_threshold": 0.5,
+    "base_value": 0.4998,
+    "score_scale": "probability",
+    "mathematical_reconciliation": {
+      "base_value": 0.499847,
+      "sum_attributions": 0.400389,
+      "reconstructed_probability": 0.900236,
+      "model_predicted_probability": 0.900236,
+      "discrepancy": 0.0,
+      "additivity_verified": true
+    },
+    "top_risk_drivers": [
+      {
+        "feature_name": "num__tenure",
+        "display_name": "Customer Tenure (Months)",
+        "encoded_value": 2.0,
+        "attribution": 0.0803,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "HIGH",
+        "impact_percentage": 8.03
+      },
+      {
+        "feature_name": "cat__InternetService_Fiber optic",
+        "display_name": "Internet Service: Fiber Optic",
+        "encoded_value": 1.0,
+        "attribution": 0.045,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "MODERATE",
+        "impact_percentage": 4.5
+      },
+      {
+        "feature_name": "cat__Contract_Two year",
+        "display_name": "Contract: Two-Year Commitment",
+        "encoded_value": 0.0,
+        "attribution": 0.0361,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "MODERATE",
+        "impact_percentage": 3.61
+      }
+    ],
+    "top_protective_factors": [
+      {
+        "feature_name": "cat__PhoneService_Yes",
+        "display_name": "Phone Service: Subscribed",
+        "encoded_value": 1.0,
+        "attribution": -0.0007,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": -0.07
+      },
+      {
+        "feature_name": "cat__MultipleLines_No phone service",
+        "display_name": "Multiple Lines: No Phone Service",
+        "encoded_value": 0.0,
+        "attribution": -0.0007,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": -0.07
+      }
+    ],
+    "all_attributions": [
+      {
+        "feature_name": "num__tenure",
+        "display_name": "Customer Tenure (Months)",
+        "encoded_value": 2.0,
+        "attribution": 0.0803,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "HIGH",
+        "impact_percentage": 8.03
+      },
+      {
+        "feature_name": "num__MonthlyCharges",
+        "display_name": "Monthly Charges ($)",
+        "encoded_value": 105.5,
+        "attribution": 0.0162,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "LOW",
+        "impact_percentage": 1.62
+      },
+      {
+        "feature_name": "num__TotalCharges",
+        "display_name": "Total Billed Charges ($)",
+        "encoded_value": 211.0,
+        "attribution": 0.0321,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "MODERATE",
+        "impact_percentage": 3.21
+      },
+      {
+        "feature_name": "cat__gender_Male",
+        "display_name": "Gender: Male",
+        "encoded_value": 0.0,
+        "attribution": 0.0008,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.08
+      },
+      {
+        "feature_name": "cat__SeniorCitizen_1",
+        "display_name": "Senior Citizen Status: Yes",
+        "encoded_value": 1.0,
+        "attribution": 0.0105,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "LOW",
+        "impact_percentage": 1.05
+      },
+      {
+        "feature_name": "cat__Partner_Yes",
+        "display_name": "Has Partner: Yes",
+        "encoded_value": 0.0,
+        "attribution": 0.0032,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.32
+      },
+      {
+        "feature_name": "cat__Dependents_Yes",
+        "display_name": "Has Dependents: Yes",
+        "encoded_value": 0.0,
+        "attribution": 0.0038,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.38
+      },
+      {
+        "feature_name": "cat__PhoneService_Yes",
+        "display_name": "Phone Service: Subscribed",
+        "encoded_value": 1.0,
+        "attribution": -0.0007,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": -0.07
+      },
+      {
+        "feature_name": "cat__MultipleLines_No phone service",
+        "display_name": "Multiple Lines: No Phone Service",
+        "encoded_value": 0.0,
+        "attribution": -0.0007,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": -0.07
+      },
+      {
+        "feature_name": "cat__MultipleLines_Yes",
+        "display_name": "Multiple Lines: Multiple Lines Active",
+        "encoded_value": 1.0,
+        "attribution": 0.0068,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.68
+      },
+      {
+        "feature_name": "cat__InternetService_Fiber optic",
+        "display_name": "Internet Service: Fiber Optic",
+        "encoded_value": 1.0,
+        "attribution": 0.045,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "MODERATE",
+        "impact_percentage": 4.5
+      },
+      {
+        "feature_name": "cat__InternetService_No",
+        "display_name": "Internet Service: None",
+        "encoded_value": 0.0,
+        "attribution": 0.0076,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.76
+      },
+      {
+        "feature_name": "cat__OnlineSecurity_No internet service",
+        "display_name": "Online Security: No Internet Service",
+        "encoded_value": 0.0,
+        "attribution": 0.0093,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.93
+      },
+      {
+        "feature_name": "cat__OnlineSecurity_Yes",
+        "display_name": "Online Security: Active",
+        "encoded_value": 0.0,
+        "attribution": 0.0157,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "LOW",
+        "impact_percentage": 1.57
+      },
+      {
+        "feature_name": "cat__OnlineBackup_No internet service",
+        "display_name": "Online Backup: No Internet Service",
+        "encoded_value": 0.0,
+        "attribution": 0.0058,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.58
+      },
+      {
+        "feature_name": "cat__OnlineBackup_Yes",
+        "display_name": "Online Backup: Active",
+        "encoded_value": 0.0,
+        "attribution": 0.0066,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.66
+      },
+      {
+        "feature_name": "cat__DeviceProtection_No internet service",
+        "display_name": "Device Protection: No Internet Service",
+        "encoded_value": 0.0,
+        "attribution": 0.0112,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "LOW",
+        "impact_percentage": 1.12
+      },
+      {
+        "feature_name": "cat__DeviceProtection_Yes",
+        "display_name": "Device Protection: Active",
+        "encoded_value": 0.0,
+        "attribution": 0.001,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.1
+      },
+      {
+        "feature_name": "cat__TechSupport_No internet service",
+        "display_name": "Tech Support: No Internet Service",
+        "encoded_value": 0.0,
+        "attribution": 0.012,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "LOW",
+        "impact_percentage": 1.2
+      },
+      {
+        "feature_name": "cat__TechSupport_Yes",
+        "display_name": "Tech Support: Active",
+        "encoded_value": 0.0,
+        "attribution": 0.01,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "LOW",
+        "impact_percentage": 1.0
+      },
+      {
+        "feature_name": "cat__StreamingTV_No internet service",
+        "display_name": "Streaming TV: No Internet Service",
+        "encoded_value": 0.0,
+        "attribution": 0.0072,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.72
+      },
+      {
+        "feature_name": "cat__StreamingTV_Yes",
+        "display_name": "Streaming TV: Active",
+        "encoded_value": 1.0,
+        "attribution": 0.0064,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.64
+      },
+      {
+        "feature_name": "cat__StreamingMovies_No internet service",
+        "display_name": "Streaming Movies: No Internet Service",
+        "encoded_value": 0.0,
+        "attribution": 0.0088,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.88
+      },
+      {
+        "feature_name": "cat__StreamingMovies_Yes",
+        "display_name": "Streaming Movies: Active",
+        "encoded_value": 1.0,
+        "attribution": 0.0053,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.53
+      },
+      {
+        "feature_name": "cat__Contract_One year",
+        "display_name": "Contract: One-Year Commitment",
+        "encoded_value": 0.0,
+        "attribution": 0.0188,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "LOW",
+        "impact_percentage": 1.88
+      },
+      {
+        "feature_name": "cat__Contract_Two year",
+        "display_name": "Contract: Two-Year Commitment",
+        "encoded_value": 0.0,
+        "attribution": 0.0361,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "MODERATE",
+        "impact_percentage": 3.61
+      },
+      {
+        "feature_name": "cat__PaperlessBilling_Yes",
+        "display_name": "Paperless Billing: Active",
+        "encoded_value": 1.0,
+        "attribution": 0.0069,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.69
+      },
+      {
+        "feature_name": "cat__PaymentMethod_Credit card (automatic)",
+        "display_name": "Payment Method: Automatic Credit Card",
+        "encoded_value": 0.0,
+        "attribution": 0.0013,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.13
+      },
+      {
+        "feature_name": "cat__PaymentMethod_Electronic check",
+        "display_name": "Payment Method: Electronic Check",
+        "encoded_value": 1.0,
+        "attribution": 0.0319,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "MODERATE",
+        "impact_percentage": 3.19
+      },
+      {
+        "feature_name": "cat__PaymentMethod_Mailed check",
+        "display_name": "Payment Method: Mailed Check",
+        "encoded_value": 0.0,
+        "attribution": 0.001,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.1
+      }
+    ],
+    "interpretability_summary": "Primary factor elevating churn risk is Customer Tenure (Months) (+8.03% probability contribution). Strongest protective factor against churn is Phone Service: Subscribed (-0.07% probability contribution).",
+    "scientific_disclaimer": "SHAP values quantify statistical feature importance assigned by the Random Forest model and do not constitute proven causal mechanisms."
+  },
+  "profile_2_low_risk": {
+    "churn_prediction": "No",
+    "churn_probability": 0.0601,
+    "risk_level": "Low",
+    "decision_threshold": 0.5,
+    "base_value": 0.4998,
+    "score_scale": "probability",
+    "mathematical_reconciliation": {
+      "base_value": 0.499847,
+      "sum_attributions": -0.439699,
+      "reconstructed_probability": 0.060148,
+      "model_predicted_probability": 0.060148,
+      "discrepancy": 0.0,
+      "additivity_verified": true
+    },
+    "top_risk_drivers": [
+      {
+        "feature_name": "cat__Contract_One year",
+        "display_name": "Contract: One-Year Commitment",
+        "encoded_value": 0.0,
+        "attribution": 0.0078,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.78
+      },
+      {
+        "feature_name": "cat__TechSupport_No internet service",
+        "display_name": "Tech Support: No Internet Service",
+        "encoded_value": 0.0,
+        "attribution": 0.0049,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.49
+      },
+      {
+        "feature_name": "cat__DeviceProtection_No internet service",
+        "display_name": "Device Protection: No Internet Service",
+        "encoded_value": 0.0,
+        "attribution": 0.0041,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.41
+      }
+    ],
+    "top_protective_factors": [
+      {
+        "feature_name": "cat__Contract_Two year",
+        "display_name": "Contract: Two-Year Commitment",
+        "encoded_value": 1.0,
+        "attribution": -0.1273,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "HIGH",
+        "impact_percentage": -12.73
+      },
+      {
+        "feature_name": "num__tenure",
+        "display_name": "Customer Tenure (Months)",
+        "encoded_value": 68.0,
+        "attribution": -0.0835,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "HIGH",
+        "impact_percentage": -8.35
+      },
+      {
+        "feature_name": "cat__InternetService_Fiber optic",
+        "display_name": "Internet Service: Fiber Optic",
+        "encoded_value": 0.0,
+        "attribution": -0.0521,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "MODERATE",
+        "impact_percentage": -5.21
+      }
+    ],
+    "all_attributions": [
+      {
+        "feature_name": "num__tenure",
+        "display_name": "Customer Tenure (Months)",
+        "encoded_value": 68.0,
+        "attribution": -0.0835,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "HIGH",
+        "impact_percentage": -8.35
+      },
+      {
+        "feature_name": "num__MonthlyCharges",
+        "display_name": "Monthly Charges ($)",
+        "encoded_value": 65.2,
+        "attribution": -0.0324,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "MODERATE",
+        "impact_percentage": -3.24
+      },
+      {
+        "feature_name": "num__TotalCharges",
+        "display_name": "Total Billed Charges ($)",
+        "encoded_value": 4433.6,
+        "attribution": -0.0443,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "MODERATE",
+        "impact_percentage": -4.43
+      },
+      {
+        "feature_name": "cat__gender_Male",
+        "display_name": "Gender: Male",
+        "encoded_value": 1.0,
+        "attribution": -0.0022,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": -0.22
+      },
+      {
+        "feature_name": "cat__SeniorCitizen_1",
+        "display_name": "Senior Citizen Status: Yes",
+        "encoded_value": 0.0,
+        "attribution": -0.0049,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": -0.49
+      },
+      {
+        "feature_name": "cat__Partner_Yes",
+        "display_name": "Has Partner: Yes",
+        "encoded_value": 1.0,
+        "attribution": -0.0063,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": -0.63
+      },
+      {
+        "feature_name": "cat__Dependents_Yes",
+        "display_name": "Has Dependents: Yes",
+        "encoded_value": 1.0,
+        "attribution": -0.0108,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "LOW",
+        "impact_percentage": -1.08
+      },
+      {
+        "feature_name": "cat__PhoneService_Yes",
+        "display_name": "Phone Service: Subscribed",
+        "encoded_value": 1.0,
+        "attribution": -0.0003,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": -0.03
+      },
+      {
+        "feature_name": "cat__MultipleLines_No phone service",
+        "display_name": "Multiple Lines: No Phone Service",
+        "encoded_value": 0.0,
+        "attribution": 0.0001,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.01
+      },
+      {
+        "feature_name": "cat__MultipleLines_Yes",
+        "display_name": "Multiple Lines: Multiple Lines Active",
+        "encoded_value": 1.0,
+        "attribution": 0.0037,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.37
+      },
+      {
+        "feature_name": "cat__InternetService_Fiber optic",
+        "display_name": "Internet Service: Fiber Optic",
+        "encoded_value": 0.0,
+        "attribution": -0.0521,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "MODERATE",
+        "impact_percentage": -5.21
+      },
+      {
+        "feature_name": "cat__InternetService_No",
+        "display_name": "Internet Service: None",
+        "encoded_value": 0.0,
+        "attribution": 0.0034,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.34
+      },
+      {
+        "feature_name": "cat__OnlineSecurity_No internet service",
+        "display_name": "Online Security: No Internet Service",
+        "encoded_value": 0.0,
+        "attribution": 0.0035,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.35
+      },
+      {
+        "feature_name": "cat__OnlineSecurity_Yes",
+        "display_name": "Online Security: Active",
+        "encoded_value": 1.0,
+        "attribution": -0.0296,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "LOW",
+        "impact_percentage": -2.96
+      },
+      {
+        "feature_name": "cat__OnlineBackup_No internet service",
+        "display_name": "Online Backup: No Internet Service",
+        "encoded_value": 0.0,
+        "attribution": 0.0021,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.21
+      },
+      {
+        "feature_name": "cat__OnlineBackup_Yes",
+        "display_name": "Online Backup: Active",
+        "encoded_value": 1.0,
+        "attribution": -0.0113,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "LOW",
+        "impact_percentage": -1.13
+      },
+      {
+        "feature_name": "cat__DeviceProtection_No internet service",
+        "display_name": "Device Protection: No Internet Service",
+        "encoded_value": 0.0,
+        "attribution": 0.0041,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.41
+      },
+      {
+        "feature_name": "cat__DeviceProtection_Yes",
+        "display_name": "Device Protection: Active",
+        "encoded_value": 1.0,
+        "attribution": -0.0016,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": -0.16
+      },
+      {
+        "feature_name": "cat__TechSupport_No internet service",
+        "display_name": "Tech Support: No Internet Service",
+        "encoded_value": 0.0,
+        "attribution": 0.0049,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.49
+      },
+      {
+        "feature_name": "cat__TechSupport_Yes",
+        "display_name": "Tech Support: Active",
+        "encoded_value": 1.0,
+        "attribution": -0.0232,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "LOW",
+        "impact_percentage": -2.32
+      },
+      {
+        "feature_name": "cat__StreamingTV_No internet service",
+        "display_name": "Streaming TV: No Internet Service",
+        "encoded_value": 0.0,
+        "attribution": 0.0032,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.32
+      },
+      {
+        "feature_name": "cat__StreamingTV_Yes",
+        "display_name": "Streaming TV: Active",
+        "encoded_value": 0.0,
+        "attribution": -0.0033,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": -0.33
+      },
+      {
+        "feature_name": "cat__StreamingMovies_No internet service",
+        "display_name": "Streaming Movies: No Internet Service",
+        "encoded_value": 0.0,
+        "attribution": 0.0029,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.29
+      },
+      {
+        "feature_name": "cat__StreamingMovies_Yes",
+        "display_name": "Streaming Movies: Active",
+        "encoded_value": 0.0,
+        "attribution": -0.0036,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": -0.36
+      },
+      {
+        "feature_name": "cat__Contract_One year",
+        "display_name": "Contract: One-Year Commitment",
+        "encoded_value": 0.0,
+        "attribution": 0.0078,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.78
+      },
+      {
+        "feature_name": "cat__Contract_Two year",
+        "display_name": "Contract: Two-Year Commitment",
+        "encoded_value": 1.0,
+        "attribution": -0.1273,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "HIGH",
+        "impact_percentage": -12.73
+      },
+      {
+        "feature_name": "cat__PaperlessBilling_Yes",
+        "display_name": "Paperless Billing: Active",
+        "encoded_value": 0.0,
+        "attribution": -0.0098,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": -0.98
+      },
+      {
+        "feature_name": "cat__PaymentMethod_Credit card (automatic)",
+        "display_name": "Payment Method: Automatic Credit Card",
+        "encoded_value": 1.0,
+        "attribution": -0.0016,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": -0.16
+      },
+      {
+        "feature_name": "cat__PaymentMethod_Electronic check",
+        "display_name": "Payment Method: Electronic Check",
+        "encoded_value": 0.0,
+        "attribution": -0.0281,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "LOW",
+        "impact_percentage": -2.81
+      },
+      {
+        "feature_name": "cat__PaymentMethod_Mailed check",
+        "display_name": "Payment Method: Mailed Check",
+        "encoded_value": 0.0,
+        "attribution": 0.0011,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.11
+      }
+    ],
+    "interpretability_summary": "Primary factor elevating churn risk is Contract: One-Year Commitment (+0.78% probability contribution). Strongest protective factor against churn is Contract: Two-Year Commitment (-12.73% probability contribution).",
+    "scientific_disclaimer": "SHAP values quantify statistical feature importance assigned by the Random Forest model and do not constitute proven causal mechanisms."
+  },
+  "profile_3_categorical_validation": {
+    "churn_prediction": "No",
+    "churn_probability": 0.2809,
+    "risk_level": "Low",
+    "decision_threshold": 0.5,
+    "base_value": 0.4998,
+    "score_scale": "probability",
+    "mathematical_reconciliation": {
+      "base_value": 0.499847,
+      "sum_attributions": -0.218945,
+      "reconstructed_probability": 0.280902,
+      "model_predicted_probability": 0.280902,
+      "discrepancy": 0.0,
+      "additivity_verified": true
+    },
+    "top_risk_drivers": [
+      {
+        "feature_name": "cat__Contract_Two year",
+        "display_name": "Contract: Two-Year Commitment",
+        "encoded_value": 0.0,
+        "attribution": 0.0316,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "MODERATE",
+        "impact_percentage": 3.16
+      },
+      {
+        "feature_name": "cat__TechSupport_Yes",
+        "display_name": "Tech Support: Active",
+        "encoded_value": 0.0,
+        "attribution": 0.0178,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "LOW",
+        "impact_percentage": 1.78
+      },
+      {
+        "feature_name": "num__TotalCharges",
+        "display_name": "Total Billed Charges ($)",
+        "encoded_value": 852.0,
+        "attribution": 0.0151,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "LOW",
+        "impact_percentage": 1.51
+      }
+    ],
+    "top_protective_factors": [
+      {
+        "feature_name": "cat__Contract_One year",
+        "display_name": "Contract: One-Year Commitment",
+        "encoded_value": 1.0,
+        "attribution": -0.0954,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "HIGH",
+        "impact_percentage": -9.54
+      },
+      {
+        "feature_name": "cat__InternetService_Fiber optic",
+        "display_name": "Internet Service: Fiber Optic",
+        "encoded_value": 0.0,
+        "attribution": -0.0546,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "MODERATE",
+        "impact_percentage": -5.46
+      },
+      {
+        "feature_name": "cat__OnlineSecurity_Yes",
+        "display_name": "Online Security: Active",
+        "encoded_value": 1.0,
+        "attribution": -0.0486,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "MODERATE",
+        "impact_percentage": -4.86
+      }
+    ],
+    "all_attributions": [
+      {
+        "feature_name": "num__tenure",
+        "display_name": "Customer Tenure (Months)",
+        "encoded_value": 24.0,
+        "attribution": -0.0459,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "MODERATE",
+        "impact_percentage": -4.59
+      },
+      {
+        "feature_name": "num__MonthlyCharges",
+        "display_name": "Monthly Charges ($)",
+        "encoded_value": 35.5,
+        "attribution": -0.0241,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "LOW",
+        "impact_percentage": -2.41
+      },
+      {
+        "feature_name": "num__TotalCharges",
+        "display_name": "Total Billed Charges ($)",
+        "encoded_value": 852.0,
+        "attribution": 0.0151,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "LOW",
+        "impact_percentage": 1.51
+      },
+      {
+        "feature_name": "cat__gender_Male",
+        "display_name": "Gender: Male",
+        "encoded_value": 0.0,
+        "attribution": -0.0014,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": -0.14
+      },
+      {
+        "feature_name": "cat__SeniorCitizen_1",
+        "display_name": "Senior Citizen Status: Yes",
+        "encoded_value": 0.0,
+        "attribution": -0.0055,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": -0.55
+      },
+      {
+        "feature_name": "cat__Partner_Yes",
+        "display_name": "Has Partner: Yes",
+        "encoded_value": 1.0,
+        "attribution": -0.0039,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": -0.39
+      },
+      {
+        "feature_name": "cat__Dependents_Yes",
+        "display_name": "Has Dependents: Yes",
+        "encoded_value": 0.0,
+        "attribution": 0.0059,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.59
+      },
+      {
+        "feature_name": "cat__PhoneService_Yes",
+        "display_name": "Phone Service: Subscribed",
+        "encoded_value": 0.0,
+        "attribution": 0.003,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.3
+      },
+      {
+        "feature_name": "cat__MultipleLines_No phone service",
+        "display_name": "Multiple Lines: No Phone Service",
+        "encoded_value": 1.0,
+        "attribution": 0.0028,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.28
+      },
+      {
+        "feature_name": "cat__MultipleLines_Yes",
+        "display_name": "Multiple Lines: Multiple Lines Active",
+        "encoded_value": 0.0,
+        "attribution": -0.004,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": -0.4
+      },
+      {
+        "feature_name": "cat__InternetService_Fiber optic",
+        "display_name": "Internet Service: Fiber Optic",
+        "encoded_value": 0.0,
+        "attribution": -0.0546,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "MODERATE",
+        "impact_percentage": -5.46
+      },
+      {
+        "feature_name": "cat__InternetService_No",
+        "display_name": "Internet Service: None",
+        "encoded_value": 0.0,
+        "attribution": 0.0055,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.55
+      },
+      {
+        "feature_name": "cat__OnlineSecurity_No internet service",
+        "display_name": "Online Security: No Internet Service",
+        "encoded_value": 0.0,
+        "attribution": 0.0052,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.52
+      },
+      {
+        "feature_name": "cat__OnlineSecurity_Yes",
+        "display_name": "Online Security: Active",
+        "encoded_value": 1.0,
+        "attribution": -0.0486,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "MODERATE",
+        "impact_percentage": -4.86
+      },
+      {
+        "feature_name": "cat__OnlineBackup_No internet service",
+        "display_name": "Online Backup: No Internet Service",
+        "encoded_value": 0.0,
+        "attribution": 0.0037,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.37
+      },
+      {
+        "feature_name": "cat__OnlineBackup_Yes",
+        "display_name": "Online Backup: Active",
+        "encoded_value": 0.0,
+        "attribution": 0.0032,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.32
+      },
+      {
+        "feature_name": "cat__DeviceProtection_No internet service",
+        "display_name": "Device Protection: No Internet Service",
+        "encoded_value": 0.0,
+        "attribution": 0.0067,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.67
+      },
+      {
+        "feature_name": "cat__DeviceProtection_Yes",
+        "display_name": "Device Protection: Active",
+        "encoded_value": 1.0,
+        "attribution": -0.0044,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": -0.44
+      },
+      {
+        "feature_name": "cat__TechSupport_No internet service",
+        "display_name": "Tech Support: No Internet Service",
+        "encoded_value": 0.0,
+        "attribution": 0.0079,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.79
+      },
+      {
+        "feature_name": "cat__TechSupport_Yes",
+        "display_name": "Tech Support: Active",
+        "encoded_value": 0.0,
+        "attribution": 0.0178,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "LOW",
+        "impact_percentage": 1.78
+      },
+      {
+        "feature_name": "cat__StreamingTV_No internet service",
+        "display_name": "Streaming TV: No Internet Service",
+        "encoded_value": 0.0,
+        "attribution": 0.0061,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.61
+      },
+      {
+        "feature_name": "cat__StreamingTV_Yes",
+        "display_name": "Streaming TV: Active",
+        "encoded_value": 0.0,
+        "attribution": -0.0088,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": -0.88
+      },
+      {
+        "feature_name": "cat__StreamingMovies_No internet service",
+        "display_name": "Streaming Movies: No Internet Service",
+        "encoded_value": 0.0,
+        "attribution": 0.0057,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.57
+      },
+      {
+        "feature_name": "cat__StreamingMovies_Yes",
+        "display_name": "Streaming Movies: Active",
+        "encoded_value": 0.0,
+        "attribution": -0.0103,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "LOW",
+        "impact_percentage": -1.03
+      },
+      {
+        "feature_name": "cat__Contract_One year",
+        "display_name": "Contract: One-Year Commitment",
+        "encoded_value": 1.0,
+        "attribution": -0.0954,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "HIGH",
+        "impact_percentage": -9.54
+      },
+      {
+        "feature_name": "cat__Contract_Two year",
+        "display_name": "Contract: Two-Year Commitment",
+        "encoded_value": 0.0,
+        "attribution": 0.0316,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "MODERATE",
+        "impact_percentage": 3.16
+      },
+      {
+        "feature_name": "cat__PaperlessBilling_Yes",
+        "display_name": "Paperless Billing: Active",
+        "encoded_value": 1.0,
+        "attribution": 0.0068,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.68
+      },
+      {
+        "feature_name": "cat__PaymentMethod_Credit card (automatic)",
+        "display_name": "Payment Method: Automatic Credit Card",
+        "encoded_value": 0.0,
+        "attribution": 0.0003,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.03
+      },
+      {
+        "feature_name": "cat__PaymentMethod_Electronic check",
+        "display_name": "Payment Method: Electronic Check",
+        "encoded_value": 0.0,
+        "attribution": -0.0434,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "MODERATE",
+        "impact_percentage": -4.34
+      },
+      {
+        "feature_name": "cat__PaymentMethod_Mailed check",
+        "display_name": "Payment Method: Mailed Check",
+        "encoded_value": 0.0,
+        "attribution": 0.0038,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.38
+      }
+    ],
+    "interpretability_summary": "Primary factor elevating churn risk is Contract: Two-Year Commitment (+3.16% probability contribution). Strongest protective factor against churn is Contract: One-Year Commitment (-9.54% probability contribution).",
+    "scientific_disclaimer": "SHAP values quantify statistical feature importance assigned by the Random Forest model and do not constitute proven causal mechanisms."
+  },
+  "profile_4_boundary_edge_case": {
+    "churn_prediction": "No",
+    "churn_probability": 0.4215,
+    "risk_level": "Medium",
+    "decision_threshold": 0.5,
+    "base_value": 0.4998,
+    "score_scale": "probability",
+    "mathematical_reconciliation": {
+      "base_value": 0.499847,
+      "sum_attributions": -0.078349,
+      "reconstructed_probability": 0.421499,
+      "model_predicted_probability": 0.421499,
+      "discrepancy": 0.0,
+      "additivity_verified": true
+    },
+    "top_risk_drivers": [
+      {
+        "feature_name": "num__tenure",
+        "display_name": "Customer Tenure (Months)",
+        "encoded_value": 0.0,
+        "attribution": 0.1311,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "HIGH",
+        "impact_percentage": 13.11
+      },
+      {
+        "feature_name": "num__TotalCharges",
+        "display_name": "Total Billed Charges ($)",
+        "encoded_value": 0.0,
+        "attribution": 0.0688,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "MODERATE",
+        "impact_percentage": 6.88
+      },
+      {
+        "feature_name": "cat__Contract_Two year",
+        "display_name": "Contract: Two-Year Commitment",
+        "encoded_value": 0.0,
+        "attribution": 0.0368,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "MODERATE",
+        "impact_percentage": 3.68
+      }
+    ],
+    "top_protective_factors": [
+      {
+        "feature_name": "cat__InternetService_Fiber optic",
+        "display_name": "Internet Service: Fiber Optic",
+        "encoded_value": 0.0,
+        "attribution": -0.0505,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "MODERATE",
+        "impact_percentage": -5.05
+      },
+      {
+        "feature_name": "num__MonthlyCharges",
+        "display_name": "Monthly Charges ($)",
+        "encoded_value": 18.25,
+        "attribution": -0.0504,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "MODERATE",
+        "impact_percentage": -5.04
+      },
+      {
+        "feature_name": "cat__TechSupport_No internet service",
+        "display_name": "Tech Support: No Internet Service",
+        "encoded_value": 1.0,
+        "attribution": -0.0418,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "MODERATE",
+        "impact_percentage": -4.18
+      }
+    ],
+    "all_attributions": [
+      {
+        "feature_name": "num__tenure",
+        "display_name": "Customer Tenure (Months)",
+        "encoded_value": 0.0,
+        "attribution": 0.1311,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "HIGH",
+        "impact_percentage": 13.11
+      },
+      {
+        "feature_name": "num__MonthlyCharges",
+        "display_name": "Monthly Charges ($)",
+        "encoded_value": 18.25,
+        "attribution": -0.0504,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "MODERATE",
+        "impact_percentage": -5.04
+      },
+      {
+        "feature_name": "num__TotalCharges",
+        "display_name": "Total Billed Charges ($)",
+        "encoded_value": 0.0,
+        "attribution": 0.0688,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "MODERATE",
+        "impact_percentage": 6.88
+      },
+      {
+        "feature_name": "cat__gender_Male",
+        "display_name": "Gender: Male",
+        "encoded_value": 1.0,
+        "attribution": -0.0026,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": -0.26
+      },
+      {
+        "feature_name": "cat__SeniorCitizen_1",
+        "display_name": "Senior Citizen Status: Yes",
+        "encoded_value": 0.0,
+        "attribution": -0.0025,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": -0.25
+      },
+      {
+        "feature_name": "cat__Partner_Yes",
+        "display_name": "Has Partner: Yes",
+        "encoded_value": 0.0,
+        "attribution": 0.0027,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.27
+      },
+      {
+        "feature_name": "cat__Dependents_Yes",
+        "display_name": "Has Dependents: Yes",
+        "encoded_value": 0.0,
+        "attribution": 0.0007,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.07
+      },
+      {
+        "feature_name": "cat__PhoneService_Yes",
+        "display_name": "Phone Service: Subscribed",
+        "encoded_value": 1.0,
+        "attribution": -0.0012,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": -0.12
+      },
+      {
+        "feature_name": "cat__MultipleLines_No phone service",
+        "display_name": "Multiple Lines: No Phone Service",
+        "encoded_value": 0.0,
+        "attribution": -0.001,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": -0.1
+      },
+      {
+        "feature_name": "cat__MultipleLines_Yes",
+        "display_name": "Multiple Lines: Multiple Lines Active",
+        "encoded_value": 0.0,
+        "attribution": -0.0015,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": -0.15
+      },
+      {
+        "feature_name": "cat__InternetService_Fiber optic",
+        "display_name": "Internet Service: Fiber Optic",
+        "encoded_value": 0.0,
+        "attribution": -0.0505,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "MODERATE",
+        "impact_percentage": -5.05
+      },
+      {
+        "feature_name": "cat__InternetService_No",
+        "display_name": "Internet Service: None",
+        "encoded_value": 1.0,
+        "attribution": -0.0272,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "LOW",
+        "impact_percentage": -2.72
+      },
+      {
+        "feature_name": "cat__OnlineSecurity_No internet service",
+        "display_name": "Online Security: No Internet Service",
+        "encoded_value": 1.0,
+        "attribution": -0.0315,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "MODERATE",
+        "impact_percentage": -3.15
+      },
+      {
+        "feature_name": "cat__OnlineSecurity_Yes",
+        "display_name": "Online Security: Active",
+        "encoded_value": 0.0,
+        "attribution": 0.0082,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.82
+      },
+      {
+        "feature_name": "cat__OnlineBackup_No internet service",
+        "display_name": "Online Backup: No Internet Service",
+        "encoded_value": 1.0,
+        "attribution": -0.0196,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "LOW",
+        "impact_percentage": -1.96
+      },
+      {
+        "feature_name": "cat__OnlineBackup_Yes",
+        "display_name": "Online Backup: Active",
+        "encoded_value": 0.0,
+        "attribution": 0.0039,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.39
+      },
+      {
+        "feature_name": "cat__DeviceProtection_No internet service",
+        "display_name": "Device Protection: No Internet Service",
+        "encoded_value": 1.0,
+        "attribution": -0.036,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "MODERATE",
+        "impact_percentage": -3.6
+      },
+      {
+        "feature_name": "cat__DeviceProtection_Yes",
+        "display_name": "Device Protection: Active",
+        "encoded_value": 0.0,
+        "attribution": 0.0008,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.08
+      },
+      {
+        "feature_name": "cat__TechSupport_No internet service",
+        "display_name": "Tech Support: No Internet Service",
+        "encoded_value": 1.0,
+        "attribution": -0.0418,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "MODERATE",
+        "impact_percentage": -4.18
+      },
+      {
+        "feature_name": "cat__TechSupport_Yes",
+        "display_name": "Tech Support: Active",
+        "encoded_value": 0.0,
+        "attribution": 0.0066,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.66
+      },
+      {
+        "feature_name": "cat__StreamingTV_No internet service",
+        "display_name": "Streaming TV: No Internet Service",
+        "encoded_value": 1.0,
+        "attribution": -0.0232,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "LOW",
+        "impact_percentage": -2.32
+      },
+      {
+        "feature_name": "cat__StreamingTV_Yes",
+        "display_name": "Streaming TV: Active",
+        "encoded_value": 0.0,
+        "attribution": -0.0028,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": -0.28
+      },
+      {
+        "feature_name": "cat__StreamingMovies_No internet service",
+        "display_name": "Streaming Movies: No Internet Service",
+        "encoded_value": 1.0,
+        "attribution": -0.0288,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "LOW",
+        "impact_percentage": -2.88
+      },
+      {
+        "feature_name": "cat__StreamingMovies_Yes",
+        "display_name": "Streaming Movies: Active",
+        "encoded_value": 0.0,
+        "attribution": -0.0027,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": -0.27
+      },
+      {
+        "feature_name": "cat__Contract_One year",
+        "display_name": "Contract: One-Year Commitment",
+        "encoded_value": 0.0,
+        "attribution": 0.0238,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "LOW",
+        "impact_percentage": 2.38
+      },
+      {
+        "feature_name": "cat__Contract_Two year",
+        "display_name": "Contract: Two-Year Commitment",
+        "encoded_value": 0.0,
+        "attribution": 0.0368,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "MODERATE",
+        "impact_percentage": 3.68
+      },
+      {
+        "feature_name": "cat__PaperlessBilling_Yes",
+        "display_name": "Paperless Billing: Active",
+        "encoded_value": 0.0,
+        "attribution": -0.0199,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "LOW",
+        "impact_percentage": -1.99
+      },
+      {
+        "feature_name": "cat__PaymentMethod_Credit card (automatic)",
+        "display_name": "Payment Method: Automatic Credit Card",
+        "encoded_value": 0.0,
+        "attribution": 0.0052,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.52
+      },
+      {
+        "feature_name": "cat__PaymentMethod_Electronic check",
+        "display_name": "Payment Method: Electronic Check",
+        "encoded_value": 0.0,
+        "attribution": -0.0241,
+        "direction": "DECREASES_CHURN_RISK",
+        "magnitude": "LOW",
+        "impact_percentage": -2.41
+      },
+      {
+        "feature_name": "cat__PaymentMethod_Mailed check",
+        "display_name": "Payment Method: Mailed Check",
+        "encoded_value": 1.0,
+        "attribution": 0.0003,
+        "direction": "INCREASES_CHURN_RISK",
+        "magnitude": "NEGLIGIBLE",
+        "impact_percentage": 0.03
+      }
+    ],
+    "interpretability_summary": "Primary factor elevating churn risk is Customer Tenure (Months) (+13.11% probability contribution). Strongest protective factor against churn is Internet Service: Fiber Optic (-5.05% probability contribution).",
+    "scientific_disclaimer": "SHAP values quantify statistical feature importance assigned by the Random Forest model and do not constitute proven causal mechanisms."
+  }
+}

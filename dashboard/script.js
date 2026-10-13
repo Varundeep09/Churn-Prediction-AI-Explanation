@@ -1,7 +1,23 @@
-const API_URL = "http://127.0.0.1:8000/predict";
+// Configurable API base URL with local and deployment fallback support
+function resolveApiBase() {
+  if (typeof window !== "undefined" && window.API_BASE_URL) {
+    return window.API_BASE_URL.replace(/\/+$/, "");
+  }
+  const saved = typeof localStorage !== "undefined" ? localStorage.getItem("API_BASE_URL") : null;
+  if (saved) {
+    return saved.replace(/\/+$/, "");
+  }
+  if (typeof window !== "undefined" && (window.location.protocol === "file:" || window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")) {
+    return "http://127.0.0.1:8000";
+  }
+  return typeof window !== "undefined" ? window.location.origin : "http://127.0.0.1:8000";
+}
 
-// Risk thresholds — must match api/main.py get_risk_level() exactly:
-// probability >= 0.66 → High, >= 0.33 → Medium, < 0.33 → Low
+const API_BASE = resolveApiBase();
+const PREDICT_URL = `${API_BASE}/predict`;
+const EXPLAIN_URL = `${API_BASE}/explain`;
+
+// Risk thresholds — match api/main.py get_risk_level() exactly:
 function getRiskLevel(probability) {
   if (probability >= 0.66) return "High";
   if (probability >= 0.33) return "Medium";
@@ -9,21 +25,48 @@ function getRiskLevel(probability) {
 }
 
 // ── DOM refs ──────────────────────────────────────────────────────
-const form            = document.getElementById("predict-form");
-const submitBtn       = document.getElementById("submit-btn");
-const btnText         = document.getElementById("btn-text");
-const btnSpinner      = document.getElementById("btn-spinner");
-const formError       = document.getElementById("form-error");
-const resultPlaceholder = document.getElementById("result-placeholder");
-const resultContent   = document.getElementById("result-content");
-const probValue         = document.getElementById("prob-value");
-const riskBadge         = document.getElementById("risk-badge");
-const predictionVerdict = document.getElementById("prediction-verdict");
-const segmentNameText   = document.getElementById("segment-name-text");
-const recommendationText = document.getElementById("recommendation-text");
-const supportingDataText = document.getElementById("supporting-data-text");
+const form                 = document.getElementById("predict-form");
+const submitBtn            = document.getElementById("submit-btn");
+const btnText              = document.getElementById("btn-text");
+const btnSpinner           = document.getElementById("btn-spinner");
+const explainBtn           = document.getElementById("explain-btn");
+const explainBtnText       = document.getElementById("explain-btn-text");
+const explainSpinner       = document.getElementById("explain-spinner");
+const formError            = document.getElementById("form-error");
+
+// Tabs & result containers
+const resultTabs           = document.getElementById("result-tabs");
+const tabBaselineBtn       = document.getElementById("tab-baseline-btn");
+const tabAiBtn             = document.getElementById("tab-ai-btn");
+const resultPlaceholder    = document.getElementById("result-placeholder");
+const resultContent        = document.getElementById("result-content");
+const aiResultContent      = document.getElementById("ai-result-content");
+
+// Baseline result refs
+const probValue            = document.getElementById("prob-value");
+const riskBadge            = document.getElementById("risk-badge");
+const predictionVerdict    = document.getElementById("prediction-verdict");
+const segmentNameText      = document.getElementById("segment-name-text");
+const recommendationText   = document.getElementById("recommendation-text");
+const supportingDataText   = document.getElementById("supporting-data-text");
+
+// AI explanation result refs
+const aiModelBadge         = document.getElementById("ai-model-badge");
+const aiFallbackBadge      = document.getElementById("ai-fallback-badge");
+const aiCalProb            = document.getElementById("ai-cal-prob");
+const aiRawScore           = document.getElementById("ai-raw-score");
+const aiThreshold          = document.getElementById("ai-threshold");
+const aiRiskBadge          = document.getElementById("ai-risk-badge");
+const aiVerdictSub         = document.getElementById("ai-verdict-sub");
+const aiSummaryText        = document.getElementById("ai-summary-text");
+const aiRiskDriversList    = document.getElementById("ai-risk-drivers-list");
+const aiProtectiveList     = document.getElementById("ai-protective-factors-list");
+const aiActionsList        = document.getElementById("ai-actions-list");
+const aiDisclaimerText     = document.getElementById("ai-disclaimer-text");
 
 let doughnutChart = null;
+let lastBaselineResult = null;
+let lastAiResult = null;
 
 // ── Churn Playbook Rules (Derived from SQL & Statistical Findings) ────
 const CHURN_PLAYBOOK = [
@@ -33,7 +76,7 @@ const CHURN_PLAYBOOK = [
     risk_level: "Critical",
     match: (p) => p.Contract === "Month-to-month" && p.tenure < 12 && p.MonthlyCharges > 70.0,
     action: "Priority retention outreach within 48 hours; offer contract upgrade discount or loyalty credit; assign dedicated account representative.",
-    supporting_data: "47.68% 1st-year churn rate; 814 target accounts identified in SQL representing $323,148/month in revenue at stake."
+    supporting_data: "47.68% 1st-year churn rate; 814 target accounts identified in SQL representing $67,418.90/month in revenue at immediate risk (from $323,148.10/month total high-value cohort)."
   },
   {
     id: 2,
@@ -77,7 +120,6 @@ const CHURN_PLAYBOOK = [
   }
 ];
 
-// ── Evaluate Playbook Segment in Hierarchical Order ───────────────
 function evaluatePlaybookSegment(payload, risk, probability) {
   for (const segment of CHURN_PLAYBOOK) {
     if (segment.match(payload)) {
@@ -102,56 +144,25 @@ function evaluatePlaybookSegment(payload, risk, probability) {
   };
 }
 
-// ── Form submit ───────────────────────────────────────────────────
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  clearError();
-  setLoading(true);
-
-  const payload = buildPayload();
-  let lastPayload = payload;
-
-  try {
-    const response = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    if (!response.ok) {
-      const detail = await response.json().catch(() => ({}));
-      throw new Error(detail.detail || `Server error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    renderResult(data, lastPayload);
-  } catch (err) {
-    if (err instanceof TypeError && err.message.includes("fetch")) {
-      showError("Cannot reach the API. Make sure the FastAPI server is running on http://127.0.0.1:8000");
-    } else {
-      showError(err.message || "An unexpected error occurred.");
-    }
-  } finally {
-    setLoading(false);
-  }
-});
-
 // ── Build payload from form ───────────────────────────────────────
 function buildPayload() {
   const fd = new FormData(form);
   const payload = {};
 
   for (const [key, value] of fd.entries()) {
-    if (key === "SeniorCitizen") {
-      payload[key] = parseInt(value, 10);
-    } else if (key === "tenure") {
+    if (key === "SeniorCitizen" || key === "tenure") {
       payload[key] = parseInt(value, 10);
     } else if (key === "MonthlyCharges") {
       payload[key] = parseFloat(value);
     } else if (key === "TotalCharges") {
-      // Optional — omit if blank so the API estimates it
       const trimmed = value.trim();
       if (trimmed !== "") payload[key] = parseFloat(trimmed);
+    } else if (key === "threshold") {
+      const trimmed = value.trim();
+      if (trimmed !== "") {
+        const tVal = parseFloat(trimmed);
+        if (!isNaN(tVal)) payload[key] = tVal;
+      }
     } else {
       payload[key] = value;
     }
@@ -160,35 +171,135 @@ function buildPayload() {
   return payload;
 }
 
-// ── Risk badge icons (match api/main.py thresholds exactly) ──────────
-const RISK_ICONS = { Low: "✓", Medium: "▲", High: "▲" };
+// ── Baseline Submit Handler (/predict) ─────────────────────────────
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  clearError();
+  setLoadingState(true, false);
 
-// ── Count-up animation for probability display ────────────────────
-function animateCountUp(element, targetPct, duration) {
+  const payload = buildPayload();
+  const lastPayload = payload;
+
+  try {
+    const response = await fetch(PREDICT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const detail = await response.json().catch(() => ({}));
+      const msg = typeof detail.detail === "string"
+        ? detail.detail
+        : (Array.isArray(detail.detail) ? detail.detail.map(d => d.msg).join(", ") : `Server error: ${response.status}`);
+      throw new Error(msg);
+    }
+
+    const data = await response.json();
+    lastBaselineResult = data;
+    renderBaselineResult(data, lastPayload);
+    switchTab("baseline");
+  } catch (err) {
+    if (err instanceof TypeError && err.message.includes("fetch")) {
+      showError("Cannot reach the API. Make sure the FastAPI server is running on http://127.0.0.1:8000");
+    } else {
+      showError(err.message || "An unexpected error occurred during prediction.");
+    }
+  } finally {
+    setLoadingState(false, false);
+  }
+});
+
+// ── AI Explanation Handler (/explain) ──────────────────────────────
+explainBtn.addEventListener("click", async (e) => {
+  e.preventDefault();
+  clearError();
+  setLoadingState(true, true);
+
+  const payload = buildPayload();
+  payload.allow_fallback = true;
+
+  try {
+    const response = await fetch(EXPLAIN_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const detail = await response.json().catch(() => ({}));
+      const msg = typeof detail.detail === "string"
+        ? detail.detail
+        : (Array.isArray(detail.detail) ? detail.detail.map(d => d.msg).join(", ") : `Server error: ${response.status}`);
+      throw new Error(msg);
+    }
+
+    const data = await response.json();
+    lastAiResult = data;
+    renderAiResult(data);
+    switchTab("ai");
+  } catch (err) {
+    if (err instanceof TypeError && err.message.includes("fetch")) {
+      showError("Cannot reach the API. Make sure the FastAPI server is running on http://127.0.0.1:8000");
+    } else {
+      showError(err.message || "An unexpected error occurred during AI retention analysis.");
+    }
+  } finally {
+    setLoadingState(false, true);
+  }
+});
+
+// ── Tab Switching ──────────────────────────────────────────────────
+tabBaselineBtn.addEventListener("click", () => switchTab("baseline"));
+tabAiBtn.addEventListener("click", () => switchTab("ai"));
+
+function switchTab(mode) {
+  resultTabs.classList.remove("hidden");
+  resultPlaceholder.classList.add("hidden");
+
+  if (mode === "baseline") {
+    tabBaselineBtn.classList.add("active");
+    tabAiBtn.classList.remove("active");
+    resultContent.classList.remove("hidden");
+    aiResultContent.classList.add("hidden");
+  } else {
+    tabAiBtn.classList.add("active");
+    tabBaselineBtn.classList.remove("active");
+    aiResultContent.classList.remove("hidden");
+    resultContent.classList.add("hidden");
+  }
+}
+
+// ── Count-Up Animation ─────────────────────────────────────────────
+function animateCountUp(element, targetPct, duration, decimals = 1, suffix = "%") {
   const start = performance.now();
   const startVal = parseFloat(element.dataset.current || "0");
   function step(now) {
     const progress = Math.min((now - start) / duration, 1);
-    const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+    const eased = 1 - Math.pow(1 - progress, 3);
     const current = startVal + (targetPct - startVal) * eased;
-    element.textContent = current.toFixed(1) + "%";
+    element.textContent = current.toFixed(decimals) + suffix;
     if (progress < 1) requestAnimationFrame(step);
-    else element.dataset.current = targetPct;
+    else {
+      element.dataset.current = targetPct;
+      element.textContent = targetPct.toFixed(decimals) + suffix;
+    }
   }
   requestAnimationFrame(step);
 }
 
-// ── Render result ─────────────────────────────────────────────────
-function renderResult(data, payload) {
+// ── Risk Badge Helpers ─────────────────────────────────────────────
+const RISK_ICONS = { Low: "✓", Medium: "▲", High: "▲" };
+
+// ── Render Baseline Prediction ─────────────────────────────────────
+function renderBaselineResult(data, payload) {
   const pct = (data.churn_probability * 100).toFixed(1) + "%";
   const risk = data.risk_level;
   const retentionPct = parseFloat((100 - data.churn_probability * 100).toFixed(1));
   const churnPct = parseFloat((data.churn_probability * 100).toFixed(1));
 
-  // Count-up animation for probability
   animateCountUp(probValue, churnPct, 350);
 
-  // Risk badge with icon
   riskBadge.textContent = RISK_ICONS[risk] + "  " + risk + " Risk";
   riskBadge.className = "risk-badge " + risk.toLowerCase();
 
@@ -197,7 +308,6 @@ function renderResult(data, payload) {
       ? `⚠️ This customer is likely to churn (${pct} probability).`
       : `✅ This customer is likely to stay (${pct} churn probability).`;
 
-  // Evaluate matching Churn Playbook segment and retention action
   const playbook = evaluatePlaybookSegment(payload, risk, data.churn_probability);
   segmentNameText.textContent    = playbook.segment_name;
   recommendationText.textContent = playbook.recommended_action;
@@ -205,14 +315,104 @@ function renderResult(data, payload) {
 
   renderDoughnut(churnPct, retentionPct);
 
-  resultPlaceholder.classList.add("hidden");
-  resultContent.classList.remove("hidden");
   resultContent.classList.remove("pulse-in");
-  void resultContent.offsetWidth; // force reflow so animation restarts
+  void resultContent.offsetWidth;
   resultContent.classList.add("pulse-in");
 }
 
-// ── Doughnut chart ────────────────────────────────────────────────
+// ── Render AI Retention Dossier ────────────────────────────────────
+function renderAiResult(data) {
+  const calPct = data.calibrated_churn_probability * 100;
+  const rawScore = data.raw_model_score;
+  const threshold = data.operational_threshold;
+  const risk = data.risk_classification;
+
+  // 1. Metric values
+  animateCountUp(aiCalProb, calPct, 350);
+  aiRawScore.textContent = rawScore.toFixed(4);
+  aiThreshold.textContent = threshold.toFixed(4);
+
+  aiRiskBadge.textContent = RISK_ICONS[risk] + " " + risk + " Risk";
+  aiRiskBadge.className = "risk-badge " + risk.toLowerCase();
+
+  const diffFromThreshold = (data.calibrated_churn_probability - threshold) * 100;
+  if (data.calibrated_churn_probability >= threshold) {
+    aiVerdictSub.textContent = `+${diffFromThreshold.toFixed(1)}% above cutoff boundary`;
+  } else {
+    aiVerdictSub.textContent = `${Math.abs(diffFromThreshold).toFixed(1)}% below cutoff boundary`;
+  }
+
+  // 2. Model badges
+  if (data.fallback_used) {
+    aiFallbackBadge.classList.remove("hidden");
+    aiModelBadge.textContent = "Deterministic Fallback";
+  } else {
+    aiFallbackBadge.classList.add("hidden");
+    aiModelBadge.textContent = data.model_version || "Gemini 2.5 Flash";
+  }
+
+  // 3. Plain language executive summary
+  aiSummaryText.textContent = data.explanation;
+
+  // 4. SHAP Risk Drivers List
+  aiRiskDriversList.innerHTML = "";
+  if (data.shap_risk_drivers && data.shap_risk_drivers.length > 0) {
+    data.shap_risk_drivers.forEach(d => {
+      const card = document.createElement("div");
+      card.className = "shap-item-card";
+      const pctStr = d.impact_percentage > 0 ? `+${d.impact_percentage.toFixed(1)}%` : `${d.impact_percentage.toFixed(1)}%`;
+      card.innerHTML = `
+        <span class="shap-item-name" title="${d.display_name}">${d.display_name}</span>
+        <span class="shap-mag-pill">${d.magnitude}</span>
+        <span class="shap-impact-badge risk">${pctStr}</span>
+      `;
+      aiRiskDriversList.appendChild(card);
+    });
+  } else {
+    aiRiskDriversList.innerHTML = `<span class="detail-value citation-text">No significant risk drivers detected.</span>`;
+  }
+
+  // 5. SHAP Protective Factors List
+  aiProtectiveList.innerHTML = "";
+  if (data.shap_protective_factors && data.shap_protective_factors.length > 0) {
+    data.shap_protective_factors.forEach(p => {
+      const card = document.createElement("div");
+      card.className = "shap-item-card";
+      const pctStr = p.impact_percentage.toFixed(1) + "%";
+      card.innerHTML = `
+        <span class="shap-item-name" title="${p.display_name}">${p.display_name}</span>
+        <span class="shap-mag-pill">${p.magnitude}</span>
+        <span class="shap-impact-badge protective">${pctStr}</span>
+      `;
+      aiProtectiveList.appendChild(card);
+    });
+  } else {
+    aiProtectiveList.innerHTML = `<span class="detail-value citation-text">No significant protective factors detected.</span>`;
+  }
+
+  // 6. Recommended Actions List
+  aiActionsList.innerHTML = "";
+  if (data.recommended_actions && data.recommended_actions.length > 0) {
+    data.recommended_actions.forEach(act => {
+      const card = document.createElement("div");
+      card.className = "ai-action-card";
+      card.innerHTML = `
+        <span class="ai-action-title">👉 ${act.action}</span>
+        <span class="ai-action-rationale">${act.rationale}</span>
+      `;
+      aiActionsList.appendChild(card);
+    });
+  }
+
+  // 7. Disclaimer
+  aiDisclaimerText.textContent = data.disclaimer;
+
+  aiResultContent.classList.remove("pulse-in");
+  void aiResultContent.offsetWidth;
+  aiResultContent.classList.add("pulse-in");
+}
+
+// ── Doughnut Chart ────────────────────────────────────────────────
 function renderDoughnut(churnPct, retentionPct) {
   const ctx = document.getElementById("doughnut-chart").getContext("2d");
 
@@ -244,10 +444,17 @@ function renderDoughnut(churnPct, retentionPct) {
 }
 
 // ── Loading state ─────────────────────────────────────────────────
-function setLoading(loading) {
+function setLoadingState(loading, isAi) {
   submitBtn.disabled = loading;
-  btnText.textContent = loading ? "Predicting…" : "Predict Churn";
-  btnSpinner.classList.toggle("hidden", !loading);
+  explainBtn.disabled = loading;
+
+  if (isAi) {
+    explainSpinner.classList.toggle("hidden", !loading);
+    explainBtnText.textContent = loading ? "Generating AI Dossier…" : "AI Retention Brief (Gemini + SHAP)";
+  } else {
+    btnSpinner.classList.toggle("hidden", !loading);
+    btnText.textContent = loading ? "Predicting…" : "Predict Churn (Baseline LR)";
+  }
 }
 
 // ── Error helpers ─────────────────────────────────────────────────
@@ -262,11 +469,7 @@ function clearError() {
 }
 
 // ── Static EDA Charts ─────────────────────────────────────────────
-// Values are approximate figures derived from the EDA notebook analysis
-// of the Telco Customer Churn training dataset.
-
 function initEDACharts() {
-  // Chart 1: Churn rate by contract type
   new Chart(document.getElementById("chart-contract").getContext("2d"), {
     type: "bar",
     data: {
@@ -282,23 +485,14 @@ function initEDACharts() {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: { callbacks: { label: (ctx) => ` ${ctx.parsed.y}%` } },
-      },
+      plugins: { legend: { display: false } },
       scales: {
-        y: {
-          beginAtZero: true,
-          max: 55,
-          ticks: { callback: (v) => v + "%" },
-          grid: { color: "#f0f2f5" },
-        },
+        y: { beginAtZero: true, max: 55, ticks: { callback: (v) => v + "%" }, grid: { color: "#f0f2f5" } },
         x: { grid: { display: false } },
       },
     },
   });
 
-  // Chart 2: Churn rate by tenure group
   new Chart(document.getElementById("chart-tenure").getContext("2d"), {
     type: "bar",
     data: {
@@ -314,23 +508,14 @@ function initEDACharts() {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: { callbacks: { label: (ctx) => ` ${ctx.parsed.y}%` } },
-      },
+      plugins: { legend: { display: false } },
       scales: {
-        y: {
-          beginAtZero: true,
-          max: 60,
-          ticks: { callback: (v) => v + "%" },
-          grid: { color: "#f0f2f5" },
-        },
+        y: { beginAtZero: true, max: 60, ticks: { callback: (v) => v + "%" }, grid: { color: "#f0f2f5" } },
         x: { grid: { display: false } },
       },
     },
   });
 
-  // Chart 3: Churn rate by internet service type
   new Chart(document.getElementById("chart-internet").getContext("2d"), {
     type: "bar",
     data: {
@@ -346,22 +531,13 @@ function initEDACharts() {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: { callbacks: { label: (ctx) => ` ${ctx.parsed.y}%` } },
-      },
+      plugins: { legend: { display: false } },
       scales: {
-        y: {
-          beginAtZero: true,
-          max: 55,
-          ticks: { callback: (v) => v + "%" },
-          grid: { color: "#f0f2f5" },
-        },
+        y: { beginAtZero: true, max: 55, ticks: { callback: (v) => v + "%" }, grid: { color: "#f0f2f5" } },
         x: { grid: { display: false } },
       },
     },
   });
 }
 
-// Init EDA charts on page load
 initEDACharts();

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Customer Churn Prediction Dashboard</title>
+  <title>Customer Churn Prediction & Retention Intelligence Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -15,10 +15,10 @@
   <header>
     <div class="header-inner">
       <div>
-        <h1>Customer Churn Prediction</h1>
-        <p class="subtitle">Telco Customer Churn &mdash; Logistic Regression Model</p>
+        <h1>Customer Churn Prediction & Retention Intelligence</h1>
+        <p class="subtitle">Production Logistic Regression &mdash; Experimental Platt-Calibrated Random Forest, SHAP &amp; Google Gemini</p>
       </div>
-      <div class="header-badge">ML Dashboard</div>
+      <div class="header-badge">AI Decision System</div>
     </div>
   </header>
 
@@ -37,12 +37,17 @@
       <div class="stat-divider"></div>
       <div class="stat-chip">
         <span class="stat-icon">&#x1F3AF;</span>
-        <span class="stat-text"><strong>80.4%</strong> accuracy</span>
+        <span class="stat-text"><strong>80.4%</strong> baseline accuracy</span>
       </div>
       <div class="stat-divider"></div>
       <div class="stat-chip">
         <span class="stat-icon">&#x1F9E0;</span>
-        <span class="stat-text"><strong>Logistic Regression</strong></span>
+        <span class="stat-text"><strong>Logistic Regression (Prod)</strong></span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-chip">
+        <span class="stat-icon">✨</span>
+        <span class="stat-text"><strong>Gemini 2.5 + SHAP (Exp)</strong></span>
       </div>
       <div class="stat-divider"></div>
       <div class="stat-chip">
@@ -60,7 +65,7 @@
       <!-- Left: Input Form -->
       <section class="card form-card">
         <div class="section-eyebrow">Step 1</div>
-        <h2>Customer Details</h2>
+        <h2>Customer Profile Details</h2>
         <form id="predict-form" novalidate>
 
           <fieldset>
@@ -100,7 +105,7 @@
 
             <div class="field-row">
               <label for="tenure">Tenure (months)</label>
-              <input type="number" id="tenure" name="tenure" min="0" max="72" placeholder="e.g. 12" required />
+              <input type="number" id="tenure" name="tenure" min="0" max="72" value="12" placeholder="e.g. 12" required />
             </div>
 
             <div class="field-row">
@@ -132,7 +137,7 @@
           </fieldset>
 
           <fieldset>
-            <legend>Services</legend>
+            <legend>Services Subscribed</legend>
 
             <div class="field-row">
               <label for="PhoneService">Phone Service</label>
@@ -216,11 +221,11 @@
           </fieldset>
 
           <fieldset>
-            <legend>Billing</legend>
+            <legend>Billing Details</legend>
 
             <div class="field-row">
               <label for="MonthlyCharges">Monthly Charges ($)</label>
-              <input type="number" id="MonthlyCharges" name="MonthlyCharges" min="0" step="0.01" placeholder="e.g. 70.35" required />
+              <input type="number" id="MonthlyCharges" name="MonthlyCharges" min="0" step="0.01" value="70.35" placeholder="e.g. 70.35" required />
             </div>
 
             <div class="field-row">
@@ -228,16 +233,36 @@
                 Total Charges ($)
                 <span class="optional-hint">(optional &mdash; estimated if blank)</span>
               </label>
-              <input type="number" id="TotalCharges" name="TotalCharges" min="0" step="0.01" placeholder="e.g. 845.25" />
+              <input type="number" id="TotalCharges" name="TotalCharges" min="0" step="0.01" value="845.25" placeholder="e.g. 845.25" />
+            </div>
+          </fieldset>
+
+          <fieldset class="advanced-settings-fieldset">
+            <legend>Experimental Model Settings</legend>
+            <div class="field-row">
+              <label for="threshold">
+                Decision Threshold
+                <span class="optional-hint">(Calibrated risk boundary &mdash; default 0.27)</span>
+              </label>
+              <input type="number" id="threshold" name="threshold" min="0" max="1" step="0.01" value="0.27" placeholder="0.27" />
             </div>
           </fieldset>
 
           <div id="form-error" class="form-error hidden"></div>
 
-          <button type="submit" id="submit-btn">
-            <span id="btn-text">Predict Churn</span>
-            <span id="btn-spinner" class="spinner hidden"></span>
-          </button>
+          <!-- Dual Action Buttons -->
+          <div class="form-actions-grid">
+            <button type="submit" id="submit-btn" class="btn btn-primary">
+              <span id="btn-text">Predict Churn (Baseline LR)</span>
+              <span id="btn-spinner" class="spinner hidden"></span>
+            </button>
+
+            <button type="button" id="explain-btn" class="btn btn-ai">
+              <span class="btn-ai-icon">✨</span>
+              <span id="explain-btn-text">AI Retention Brief (Gemini + SHAP)</span>
+              <span id="explain-spinner" class="spinner hidden"></span>
+            </button>
+          </div>
 
         </form>
       </section>
@@ -245,55 +270,61 @@
       <!-- Right: Result Panel -->
       <section class="card result-card" id="result-panel">
 
+        <!-- Result Tabs Switcher (Shown when results exist) -->
+        <div class="result-tabs-container hidden" id="result-tabs">
+          <button type="button" class="tab-btn active" id="tab-baseline-btn">📊 Baseline Model (LR)</button>
+          <button type="button" class="tab-btn" id="tab-ai-btn">✨ AI Retention Dossier (Gemini + SHAP)</button>
+        </div>
+
         <!-- Empty state -->
         <div class="result-placeholder" id="result-placeholder">
           <div class="placeholder-top">
             <div class="placeholder-icon">&#x1F4CA;</div>
             <div class="placeholder-intro">
-              <p class="placeholder-title">Churn Risk Analyzer</p>
-              <p class="placeholder-desc">This model analyzes 19 customer attributes to estimate churn risk using a Logistic Regression model trained on 7,000+ telecom customers.</p>
+              <p class="placeholder-title">Churn Intelligence & Explainability Engine</p>
+              <p class="placeholder-desc">Analyze customer risk using either the production Logistic Regression baseline or the experimental Platt-calibrated Random Forest with SHAP explainability and Google Gemini retention intelligence.</p>
             </div>
           </div>
 
           <div class="how-it-works">
-            <p class="how-title">How it works</p>
+            <p class="how-title">System capabilities</p>
             <ol class="stepper">
               <li class="step">
                 <span class="step-num">1</span>
                 <div class="step-body">
-                  <span class="step-label">Enter customer details</span>
-                  <span class="step-desc">Fill in account, service, and billing info on the left</span>
+                  <span class="step-label">Predict Churn (Baseline)</span>
+                  <span class="step-desc">Evaluates standard 19-feature Logistic Regression and maps customer to SQL playbook segment.</span>
                 </div>
               </li>
               <li class="step">
                 <span class="step-num">2</span>
                 <div class="step-body">
-                  <span class="step-label">Model analyzes patterns</span>
-                  <span class="step-desc">The API applies the trained Logistic Regression model</span>
+                  <span class="step-label">AI Retention Brief (Experimental)</span>
+                  <span class="step-desc">Runs Platt-calibrated Random Forest, computes local SHAP tree attributions, and prompts Gemini for personalized, grounded retention initiatives.</span>
                 </div>
               </li>
               <li class="step">
                 <span class="step-num">3</span>
                 <div class="step-body">
-                  <span class="step-label">Get churn probability</span>
-                  <span class="step-desc">See a probability score, risk level, and key risk factors</span>
+                  <span class="step-label">Decoupled Interpretability</span>
+                  <span class="step-desc">Keeps calibrated probabilities, internal tree base scores, and non-causal statistical attributions cleanly separated.</span>
                 </div>
               </li>
             </ol>
           </div>
 
-          <p class="placeholder-cta">&#x2190; Fill in the form and click <strong>Predict Churn</strong></p>
+          <p class="placeholder-cta">&#x2190; Fill in customer details and select an analysis mode above</p>
         </div>
 
-        <!-- Result content (shown after prediction) -->
+        <!-- Mode 1: Production Baseline Result -->
         <div class="result-content hidden" id="result-content">
-          <div class="section-eyebrow">Results</div>
-          <h2>Prediction Result</h2>
+          <div class="section-eyebrow">Production Model</div>
+          <h2>Baseline Prediction Result</h2>
 
           <div class="result-main">
             <div class="probability-display">
               <span class="prob-value" id="prob-value">—</span>
-              <span class="prob-label">Churn Probability</span>
+              <span class="prob-label">Churn Probability (LR)</span>
             </div>
             <div id="risk-badge" class="risk-badge">—</div>
           </div>
@@ -320,29 +351,127 @@
           </div>
         </div>
 
+        <!-- Mode 2: Experimental AI Retention Dossier -->
+        <div class="ai-result-content hidden" id="ai-result-content">
+          <div class="ai-header-row">
+            <div>
+              <div class="section-eyebrow">Experimental Decision Intelligence</div>
+              <h2>Retention Intelligence Dossier</h2>
+            </div>
+            <div class="ai-badge-group">
+              <span id="ai-model-badge" class="ai-badge gemini">Gemini 2.5 Flash</span>
+              <span id="ai-fallback-badge" class="ai-badge fallback hidden">Deterministic Fallback</span>
+            </div>
+          </div>
+
+          <!-- Multi-Scale Metric Grid -->
+          <div class="ai-metric-grid">
+            <div class="ai-metric-card primary">
+              <span class="ai-metric-label">Calibrated Probability</span>
+              <span class="ai-metric-val" id="ai-cal-prob">—</span>
+              <span class="ai-metric-sub">Platt-calibrated frequentist risk</span>
+            </div>
+            <div class="ai-metric-card secondary">
+              <span class="ai-metric-label">Internal Base Score</span>
+              <span class="ai-metric-val" id="ai-raw-score">—</span>
+              <span class="ai-metric-sub">Uncalibrated Random Forest tree score</span>
+            </div>
+            <div class="ai-metric-card neutral">
+              <span class="ai-metric-label">Decision Boundary</span>
+              <span class="ai-metric-val" id="ai-threshold">0.2700</span>
+              <span class="ai-metric-sub">Calibrated intervention threshold</span>
+            </div>
+            <div class="ai-metric-card tier">
+              <span class="ai-metric-label">Risk Classification</span>
+              <div id="ai-risk-badge" class="risk-badge medium">Medium Risk</div>
+              <span class="ai-metric-sub" id="ai-verdict-sub">Evaluation vs threshold</span>
+            </div>
+          </div>
+
+          <!-- Gemini Executive Plain-Language Summary -->
+          <div class="ai-brief-box">
+            <div class="ai-box-header">
+              <span class="ai-box-icon">⚡</span>
+              <span class="ai-box-title">AI Plain-Language Retention Brief</span>
+            </div>
+            <p class="ai-summary-text" id="ai-summary-text">—</p>
+          </div>
+
+          <!-- SHAP Explainability Breakdown -->
+          <div class="shap-breakdown-section">
+            <div class="shap-section-title">
+              <span>🔬 Customer-Level SHAP Feature Attributions</span>
+              <span class="shap-scale-tag">Base Model Scale</span>
+            </div>
+            <div class="shap-columns-grid">
+              <!-- Elevating Risk Drivers -->
+              <div class="shap-column drivers">
+                <div class="shap-column-header">
+                  <span class="column-icon">📈</span>
+                  <span class="column-title">Top Risk Drivers (Elevating Risk)</span>
+                </div>
+                <div class="shap-items-list" id="ai-risk-drivers-list">
+                  <!-- Dynamic risk driver cards -->
+                </div>
+              </div>
+
+              <!-- Mitigating Protective Factors -->
+              <div class="shap-column protective">
+                <div class="shap-column-header">
+                  <span class="column-icon">🛡️</span>
+                  <span class="column-title">Protective Factors (Mitigating Risk)</span>
+                </div>
+                <div class="shap-items-list" id="ai-protective-factors-list">
+                  <!-- Dynamic protective factor cards -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recommended Retention Actions -->
+          <div class="ai-actions-box">
+            <div class="ai-box-header">
+              <span class="ai-box-icon">🎯</span>
+              <span class="ai-box-title">Evidence-Grounded Recommended Actions</span>
+            </div>
+            <div class="ai-actions-list" id="ai-actions-list">
+              <!-- Dynamic recommendation cards -->
+            </div>
+          </div>
+
+          <!-- Scientific Non-Causality Disclaimer -->
+          <div class="ai-disclaimer-box">
+            <div class="disclaimer-icon">ℹ️</div>
+            <div class="disclaimer-body">
+              <p class="disclaimer-main" id="ai-disclaimer-text">Feature attributions represent observational statistical associations and do not prove causation.</p>
+              <p class="disclaimer-note">Scale Decoupling Notice: SHAP attributions quantify additive tree split effects on the uncalibrated base Random Forest score and do not directly sum to the Platt-calibrated probability.</p>
+            </div>
+          </div>
+        </div>
+
       </section>
     </div>
 
     <!-- ── Model Metrics ────────────────────────────────────────── -->
     <section class="metrics-strip">
-      <div class="section-eyebrow">Model Performance</div>
-      <h2>Logistic Regression <span class="model-label">Test Set Results</span></h2>
+      <div class="section-eyebrow">Model Performance Comparison</div>
+      <h2>Production Logistic Regression vs. Experimental Calibrated Random Forest</h2>
       <div class="metrics-grid">
         <div class="metric-card">
           <span class="metric-value">80.45%</span>
-          <span class="metric-name">Accuracy</span>
+          <span class="metric-name">LR Accuracy</span>
         </div>
         <div class="metric-card">
-          <span class="metric-value">65.05%</span>
-          <span class="metric-name">Precision</span>
+          <span class="metric-value">0.8407</span>
+          <span class="metric-name">LR ROC-AUC</span>
         </div>
         <div class="metric-card">
-          <span class="metric-value">57.22%</span>
-          <span class="metric-name">Recall</span>
+          <span class="metric-value">0.8390</span>
+          <span class="metric-name">Calibrated RF ROC-AUC</span>
         </div>
         <div class="metric-card">
-          <span class="metric-value">60.88%</span>
-          <span class="metric-name">F1-Score</span>
+          <span class="metric-value">0.1347</span>
+          <span class="metric-name">Platt Brier Score</span>
         </div>
       </div>
     </section>
@@ -383,17 +512,12 @@
   <footer>
     <div class="footer-inner">
       <div class="footer-left">
-        <span class="footer-title">Customer Churn Prediction</span>
+        <span class="footer-title">Customer Churn Prediction & Retention Intelligence</span>
         <span class="footer-sep">&mdash;</span>
-        <span>Telco Dataset &mdash; Trained 2026-07-29</span>
+        <span>Telco Dataset &mdash; Phase 3D Full-Stack Integration</span>
       </div>
       <div class="footer-right">
-        <span class="footer-stack">Built with Python &middot; Scikit-learn &middot; FastAPI &middot; Chart.js</span>
-        <a href="#" class="footer-gh" title="GitHub" aria-label="GitHub">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.342-3.369-1.342-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
-          </svg>
-        </a>
+        <span class="footer-stack">Built with Python &middot; Scikit-learn &middot; SHAP &middot; Google Gemini &middot; FastAPI &middot; Chart.js</span>
       </div>
     </div>
   </footer>

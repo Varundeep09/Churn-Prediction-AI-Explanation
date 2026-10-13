@@ -1,0 +1,245 @@
+{
+  "audit_scope": "Independent Phase 3B Re-evaluation via Nested 5-Fold Cross-Validation",
+  "training_sample_size": 5625,
+  "churn_prevalence": 0.265778,
+  "reference_climatological_brier": 0.19514,
+  "models": {
+    "raw": {
+      "model_name": "Uncalibrated Balanced RF",
+      "pooled": {
+        "brier": 0.15957,
+        "bss": 0.1823,
+        "log_loss": 0.479416,
+        "ece": 0.1419,
+        "mce": 0.2365,
+        "roc_auc": 0.8476,
+        "pr_auc": 0.6617
+      },
+      "fold_mean": {
+        "brier": 0.1596,
+        "bss": 0.1823,
+        "log_loss": 0.4794,
+        "ece": 0.1422,
+        "mce": 0.2671,
+        "roc_auc": 0.8477,
+        "pr_auc": 0.6655
+      },
+      "fold_std": {
+        "brier": 0.0027,
+        "bss": 0.0136,
+        "log_loss": 0.0072,
+        "ece": 0.0039,
+        "mce": 0.0382,
+        "roc_auc": 0.006,
+        "pr_auc": 0.0187
+      },
+      "fold_details": [
+        {
+          "brier": 0.160363,
+          "bss": 0.1782,
+          "log_loss": 0.482654,
+          "ece": 0.1382,
+          "mce": 0.2574,
+          "roc_auc": 0.8422,
+          "pr_auc": 0.6636
+        },
+        {
+          "brier": 0.162948,
+          "bss": 0.165,
+          "log_loss": 0.487594,
+          "ece": 0.1467,
+          "mce": 0.2828,
+          "roc_auc": 0.8428,
+          "pr_auc": 0.6485
+        },
+        {
+          "brier": 0.159385,
+          "bss": 0.1832,
+          "log_loss": 0.478337,
+          "ece": 0.1393,
+          "mce": 0.2222,
+          "roc_auc": 0.8459,
+          "pr_auc": 0.6477
+        },
+        {
+          "brier": 0.159593,
+          "bss": 0.1822,
+          "log_loss": 0.480331,
+          "ece": 0.1458,
+          "mce": 0.2497,
+          "roc_auc": 0.8514,
+          "pr_auc": 0.6768
+        },
+        {
+          "brier": 0.155563,
+          "bss": 0.2028,
+          "log_loss": 0.468165,
+          "ece": 0.1408,
+          "mce": 0.3235,
+          "roc_auc": 0.8563,
+          "pr_auc": 0.6911
+        }
+      ]
+    },
+    "platt": {
+      "model_name": "Sigmoid (Platt Scaling)",
+      "pooled": {
+        "brier": 0.134719,
+        "bss": 0.3096,
+        "log_loss": 0.41599,
+        "ece": 0.0139,
+        "mce": 0.0564,
+        "roc_auc": 0.8474,
+        "pr_auc": 0.6606
+      },
+      "fold_mean": {
+        "brier": 0.1347,
+        "bss": 0.3096,
+        "log_loss": 0.416,
+        "ece": 0.0241,
+        "mce": 0.0925,
+        "roc_auc": 0.8477,
+        "pr_auc": 0.6655
+      },
+      "fold_std": {
+        "brier": 0.0025,
+        "bss": 0.0127,
+        "log_loss": 0.0059,
+        "ece": 0.0046,
+        "mce": 0.0548,
+        "roc_auc": 0.006,
+        "pr_auc": 0.0187
+      },
+      "fold_details": [
+        {
+          "brier": 0.135645,
+          "bss": 0.3049,
+          "log_loss": 0.420619,
+          "ece": 0.0274,
+          "mce": 0.0838,
+          "roc_auc": 0.8422,
+          "pr_auc": 0.6636
+        },
+        {
+          "brier": 0.136948,
+          "bss": 0.2982,
+          "log_loss": 0.420918,
+          "ece": 0.0218,
+          "mce": 0.0548,
+          "roc_auc": 0.8428,
+          "pr_auc": 0.6485
+        },
+        {
+          "brier": 0.136776,
+          "bss": 0.2991,
+          "log_loss": 0.418794,
+          "ece": 0.0194,
+          "mce": 0.053,
+          "roc_auc": 0.8459,
+          "pr_auc": 0.6477
+        },
+        {
+          "brier": 0.132805,
+          "bss": 0.3194,
+          "log_loss": 0.412033,
+          "ece": 0.0216,
+          "mce": 0.0842,
+          "roc_auc": 0.8514,
+          "pr_auc": 0.6768
+        },
+        {
+          "brier": 0.131421,
+          "bss": 0.3265,
+          "log_loss": 0.407588,
+          "ece": 0.0304,
+          "mce": 0.1868,
+          "roc_auc": 0.8563,
+          "pr_auc": 0.6911
+        }
+      ]
+    },
+    "iso": {
+      "model_name": "Isotonic Regression",
+      "pooled": {
+        "brier": 0.135442,
+        "bss": 0.3059,
+        "log_loss": 0.417122,
+        "ece": 0.0126,
+        "mce": 0.0491,
+        "roc_auc": 0.8448,
+        "pr_auc": 0.6505
+      },
+      "fold_mean": {
+        "brier": 0.1354,
+        "bss": 0.3059,
+        "log_loss": 0.4171,
+        "ece": 0.033,
+        "mce": 0.1302,
+        "roc_auc": 0.8462,
+        "pr_auc": 0.6459
+      },
+      "fold_std": {
+        "brier": 0.0029,
+        "bss": 0.0149,
+        "log_loss": 0.0074,
+        "ece": 0.0056,
+        "mce": 0.0508,
+        "roc_auc": 0.0064,
+        "pr_auc": 0.0225
+      },
+      "fold_details": [
+        {
+          "brier": 0.134963,
+          "bss": 0.3084,
+          "log_loss": 0.420186,
+          "ece": 0.0298,
+          "mce": 0.0712,
+          "roc_auc": 0.8419,
+          "pr_auc": 0.6503
+        },
+        {
+          "brier": 0.138019,
+          "bss": 0.2927,
+          "log_loss": 0.423127,
+          "ece": 0.0413,
+          "mce": 0.1937,
+          "roc_auc": 0.8416,
+          "pr_auc": 0.6291
+        },
+        {
+          "brier": 0.138741,
+          "bss": 0.289,
+          "log_loss": 0.422988,
+          "ece": 0.0294,
+          "mce": 0.0887,
+          "roc_auc": 0.8414,
+          "pr_auc": 0.6176
+        },
+        {
+          "brier": 0.133549,
+          "bss": 0.3156,
+          "log_loss": 0.413187,
+          "ece": 0.0282,
+          "mce": 0.1345,
+          "roc_auc": 0.8507,
+          "pr_auc": 0.6596
+        },
+        {
+          "brier": 0.13194,
+          "bss": 0.3239,
+          "log_loss": 0.406122,
+          "ece": 0.0363,
+          "mce": 0.1627,
+          "roc_auc": 0.8552,
+          "pr_auc": 0.6729
+        }
+      ]
+    }
+  },
+  "methodological_findings": {
+    "holdout_influence_detected": true,
+    "holdout_contamination_detail": "Phase 3B report explicitly cited holdout test set ECE, Brier score, and ROC-AUC degradation as the rationale to select Sigmoid over Isotonic regression. Therefore, the holdout test set cannot be claimed as an untouched blind evaluation set.",
+    "in_sample_isotonic_evaluation_in_3b": "Phase 3B run_calibration_audit.py evaluated Isotonic Regression in-sample on the same 5-fold OOF predictions used to fit it, artificially reporting Train_ECE = 0.0000. When evaluated via nested out-of-sample CV, true training-only ECE is 0.0084.",
+    "unpickling_import_bug": "CalibratedPipelineWrapper was serialized from run_calibration_audit.py with top-level executable script execution, causing full re-execution on joblib.load() and ModuleNotFoundError if 'model' is not on sys.path."
+  }
+}

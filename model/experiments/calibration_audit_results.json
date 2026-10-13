@@ -1,0 +1,473 @@
+{
+  "reference_metrics": {
+    "prevalence_train": 0.265778,
+    "prevalence_test": 0.265814,
+    "climatological_brier_train": 0.19514,
+    "climatological_brier_test": 0.195157
+  },
+  "out_of_fold_training_metrics": {
+    "uncalibrated": {
+      "brier_score": 0.15957,
+      "brier_skill_score": 0.1823,
+      "log_loss": 0.479416,
+      "ece": 0.1419,
+      "mce": 0.2365,
+      "roc_auc": 0.8476,
+      "pr_auc": 0.6617,
+      "bin_details": [
+        {
+          "bin": 1,
+          "n_samples": 1126,
+          "confidence": 0.0487,
+          "accuracy": 0.016,
+          "error": 0.0327
+        },
+        {
+          "bin": 2,
+          "n_samples": 635,
+          "confidence": 0.1488,
+          "accuracy": 0.0583,
+          "error": 0.0905
+        },
+        {
+          "bin": 3,
+          "n_samples": 624,
+          "confidence": 0.2493,
+          "accuracy": 0.0865,
+          "error": 0.1628
+        },
+        {
+          "bin": 4,
+          "n_samples": 481,
+          "confidence": 0.3449,
+          "accuracy": 0.1497,
+          "error": 0.1952
+        },
+        {
+          "bin": 5,
+          "n_samples": 520,
+          "confidence": 0.4483,
+          "accuracy": 0.2327,
+          "error": 0.2156
+        },
+        {
+          "bin": 6,
+          "n_samples": 539,
+          "confidence": 0.55,
+          "accuracy": 0.3525,
+          "error": 0.1975
+        },
+        {
+          "bin": 7,
+          "n_samples": 495,
+          "confidence": 0.6506,
+          "accuracy": 0.4141,
+          "error": 0.2365
+        },
+        {
+          "bin": 8,
+          "n_samples": 576,
+          "confidence": 0.7494,
+          "accuracy": 0.559,
+          "error": 0.1904
+        },
+        {
+          "bin": 9,
+          "n_samples": 546,
+          "confidence": 0.8491,
+          "accuracy": 0.7399,
+          "error": 0.1092
+        },
+        {
+          "bin": 10,
+          "n_samples": 83,
+          "confidence": 0.9126,
+          "accuracy": 0.8675,
+          "error": 0.0451
+        }
+      ]
+    },
+    "sigmoid_platt": {
+      "brier_score": 0.134692,
+      "brier_skill_score": 0.3098,
+      "log_loss": 0.415813,
+      "ece": 0.0134,
+      "mce": 0.0534,
+      "roc_auc": 0.8476,
+      "pr_auc": 0.6617,
+      "bin_details": [
+        {
+          "bin": 1,
+          "n_samples": 2275,
+          "confidence": 0.0485,
+          "accuracy": 0.0462,
+          "error": 0.0024
+        },
+        {
+          "bin": 2,
+          "n_samples": 759,
+          "confidence": 0.1441,
+          "accuracy": 0.1489,
+          "error": 0.0048
+        },
+        {
+          "bin": 3,
+          "n_samples": 503,
+          "confidence": 0.2491,
+          "accuracy": 0.2704,
+          "error": 0.0213
+        },
+        {
+          "bin": 4,
+          "n_samples": 432,
+          "confidence": 0.3482,
+          "accuracy": 0.3519,
+          "error": 0.0037
+        },
+        {
+          "bin": 5,
+          "n_samples": 361,
+          "confidence": 0.4494,
+          "accuracy": 0.41,
+          "error": 0.0395
+        },
+        {
+          "bin": 6,
+          "n_samples": 436,
+          "confidence": 0.5521,
+          "accuracy": 0.5482,
+          "error": 0.0039
+        },
+        {
+          "bin": 7,
+          "n_samples": 453,
+          "confidence": 0.6522,
+          "accuracy": 0.6159,
+          "error": 0.0363
+        },
+        {
+          "bin": 8,
+          "n_samples": 406,
+          "confidence": 0.7421,
+          "accuracy": 0.7956,
+          "error": 0.0534
+        }
+      ]
+    },
+    "isotonic": {
+      "brier_score": 0.132719,
+      "brier_skill_score": 0.3199,
+      "log_loss": 0.408814,
+      "ece": 0.0,
+      "mce": 0.0,
+      "roc_auc": 0.8504,
+      "pr_auc": 0.6537,
+      "bin_details": [
+        {
+          "bin": 1,
+          "n_samples": 2396,
+          "confidence": 0.0455,
+          "accuracy": 0.0455,
+          "error": 0.0
+        },
+        {
+          "bin": 2,
+          "n_samples": 551,
+          "confidence": 0.1543,
+          "accuracy": 0.1543,
+          "error": 0.0
+        },
+        {
+          "bin": 3,
+          "n_samples": 420,
+          "confidence": 0.2357,
+          "accuracy": 0.2357,
+          "error": 0.0
+        },
+        {
+          "bin": 4,
+          "n_samples": 478,
+          "confidence": 0.3326,
+          "accuracy": 0.3326,
+          "error": 0.0
+        },
+        {
+          "bin": 5,
+          "n_samples": 562,
+          "confidence": 0.4199,
+          "accuracy": 0.4199,
+          "error": 0.0
+        },
+        {
+          "bin": 6,
+          "n_samples": 589,
+          "confidence": 0.562,
+          "accuracy": 0.562,
+          "error": 0.0
+        },
+        {
+          "bin": 7,
+          "n_samples": 270,
+          "confidence": 0.6667,
+          "accuracy": 0.6667,
+          "error": 0.0
+        },
+        {
+          "bin": 8,
+          "n_samples": 103,
+          "confidence": 0.767,
+          "accuracy": 0.767,
+          "error": 0.0
+        },
+        {
+          "bin": 9,
+          "n_samples": 221,
+          "confidence": 0.8326,
+          "accuracy": 0.8326,
+          "error": 0.0
+        },
+        {
+          "bin": 10,
+          "n_samples": 35,
+          "confidence": 0.9429,
+          "accuracy": 0.9429,
+          "error": 0.0
+        }
+      ]
+    }
+  },
+  "holdout_test_metrics": {
+    "uncalibrated": {
+      "brier_score": 0.167313,
+      "brier_skill_score": 0.1427,
+      "log_loss": 0.495061,
+      "ece": 0.1498,
+      "mce": 0.2648,
+      "roc_auc": 0.839,
+      "pr_auc": 0.645,
+      "bin_details": [
+        {
+          "bin": 1,
+          "n_samples": 293,
+          "confidence": 0.0488,
+          "accuracy": 0.0137,
+          "error": 0.0351
+        },
+        {
+          "bin": 2,
+          "n_samples": 147,
+          "confidence": 0.1473,
+          "accuracy": 0.0612,
+          "error": 0.0861
+        },
+        {
+          "bin": 3,
+          "n_samples": 155,
+          "confidence": 0.2485,
+          "accuracy": 0.129,
+          "error": 0.1195
+        },
+        {
+          "bin": 4,
+          "n_samples": 98,
+          "confidence": 0.3516,
+          "accuracy": 0.1939,
+          "error": 0.1577
+        },
+        {
+          "bin": 5,
+          "n_samples": 123,
+          "confidence": 0.4517,
+          "accuracy": 0.187,
+          "error": 0.2648
+        },
+        {
+          "bin": 6,
+          "n_samples": 132,
+          "confidence": 0.5512,
+          "accuracy": 0.2879,
+          "error": 0.2633
+        },
+        {
+          "bin": 7,
+          "n_samples": 143,
+          "confidence": 0.6487,
+          "accuracy": 0.4406,
+          "error": 0.2081
+        },
+        {
+          "bin": 8,
+          "n_samples": 141,
+          "confidence": 0.7462,
+          "accuracy": 0.539,
+          "error": 0.2071
+        },
+        {
+          "bin": 9,
+          "n_samples": 161,
+          "confidence": 0.8504,
+          "accuracy": 0.6832,
+          "error": 0.1672
+        },
+        {
+          "bin": 10,
+          "n_samples": 14,
+          "confidence": 0.9081,
+          "accuracy": 0.8571,
+          "error": 0.0509
+        }
+      ]
+    },
+    "sigmoid_platt": {
+      "brier_score": 0.139271,
+      "brier_skill_score": 0.2864,
+      "log_loss": 0.427198,
+      "ece": 0.026,
+      "mce": 0.101,
+      "roc_auc": 0.839,
+      "pr_auc": 0.645,
+      "bin_details": [
+        {
+          "bin": 1,
+          "n_samples": 570,
+          "confidence": 0.048,
+          "accuracy": 0.0474,
+          "error": 0.0007
+        },
+        {
+          "bin": 2,
+          "n_samples": 158,
+          "confidence": 0.1463,
+          "accuracy": 0.1835,
+          "error": 0.0372
+        },
+        {
+          "bin": 3,
+          "n_samples": 123,
+          "confidence": 0.2499,
+          "accuracy": 0.2358,
+          "error": 0.0141
+        },
+        {
+          "bin": 4,
+          "n_samples": 113,
+          "confidence": 0.3506,
+          "accuracy": 0.292,
+          "error": 0.0586
+        },
+        {
+          "bin": 5,
+          "n_samples": 107,
+          "confidence": 0.451,
+          "accuracy": 0.4019,
+          "error": 0.0491
+        },
+        {
+          "bin": 6,
+          "n_samples": 114,
+          "confidence": 0.5537,
+          "accuracy": 0.5614,
+          "error": 0.0077
+        },
+        {
+          "bin": 7,
+          "n_samples": 108,
+          "confidence": 0.6565,
+          "accuracy": 0.5556,
+          "error": 0.101
+        },
+        {
+          "bin": 8,
+          "n_samples": 114,
+          "confidence": 0.7375,
+          "accuracy": 0.7807,
+          "error": 0.0432
+        }
+      ]
+    },
+    "isotonic": {
+      "brier_score": 0.139214,
+      "brier_skill_score": 0.2867,
+      "log_loss": 0.425857,
+      "ece": 0.0298,
+      "mce": 0.1231,
+      "roc_auc": 0.8368,
+      "pr_auc": 0.6282,
+      "bin_details": [
+        {
+          "bin": 1,
+          "n_samples": 596,
+          "confidence": 0.0442,
+          "accuracy": 0.0554,
+          "error": 0.0112
+        },
+        {
+          "bin": 2,
+          "n_samples": 114,
+          "confidence": 0.1585,
+          "accuracy": 0.193,
+          "error": 0.0345
+        },
+        {
+          "bin": 3,
+          "n_samples": 101,
+          "confidence": 0.236,
+          "accuracy": 0.1782,
+          "error": 0.0578
+        },
+        {
+          "bin": 4,
+          "n_samples": 120,
+          "confidence": 0.3329,
+          "accuracy": 0.2583,
+          "error": 0.0746
+        },
+        {
+          "bin": 5,
+          "n_samples": 157,
+          "confidence": 0.4181,
+          "accuracy": 0.4395,
+          "error": 0.0214
+        },
+        {
+          "bin": 6,
+          "n_samples": 144,
+          "confidence": 0.5603,
+          "accuracy": 0.5486,
+          "error": 0.0117
+        },
+        {
+          "bin": 7,
+          "n_samples": 77,
+          "confidence": 0.6686,
+          "accuracy": 0.5455,
+          "error": 0.1231
+        },
+        {
+          "bin": 8,
+          "n_samples": 29,
+          "confidence": 0.7656,
+          "accuracy": 0.7931,
+          "error": 0.0275
+        },
+        {
+          "bin": 9,
+          "n_samples": 65,
+          "confidence": 0.831,
+          "accuracy": 0.8154,
+          "error": 0.0156
+        },
+        {
+          "bin": 10,
+          "n_samples": 4,
+          "confidence": 0.9337,
+          "accuracy": 1.0,
+          "error": 0.0663
+        }
+      ]
+    }
+  },
+  "selected_method": "Sigmoid (Platt Scaling)",
+  "selection_rationale": "Sigmoid Platt scaling reduces test ECE from 0.1498 to 0.0260 (an 82.6% error reduction), lowers test Brier score from 0.1673 to 0.1393 (a 28.6% Brier Skill Score over base rate), and produces smooth, strictly monotonic probabilities without the step-function plateaus of isotonic regression.",
+  "shap_compatibility_protocol": "TreeExplainer must explain the uncalibrated Random Forest base pipeline directly (retaining exact additivity: base_value + sum(shap) == raw_probability). The sigmoid transformation is strictly monotonic, meaning positive SHAP drivers directly increase calibrated probability without distortion."
+}

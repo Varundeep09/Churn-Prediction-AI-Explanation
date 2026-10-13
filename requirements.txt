@@ -8,3 +8,6 @@ uvicorn
 joblib
 python-multipart
 scipy
+shap>=0.45.0
+google-genai>=2.0.0
+python-dotenv>=1.0.0
