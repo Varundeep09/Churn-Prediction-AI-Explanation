@@ -16,34 +16,38 @@ This project builds an end-to-end customer churn prediction system for a telecom
 
 Verified from `requirements.txt` and actual `import` statements in each source file.
 
-### Python backend (`requirements.txt` + imports)
+### Python Backend & AI Engine (`requirements.txt` + Imports)
 
-| Library | Version pinned? | Used for |
+| Library | Version Constraint | Used For |
 |---|---|---|
-| `pandas` | No | DataFrame operations throughout preprocessing, training, and API inference |
-| `numpy` | No | Imported transitively; not directly called in source files beyond pandas operations |
-| `scikit-learn` | No | `train_test_split`, `StandardScaler`, `LogisticRegression`, `RandomForestClassifier`, and all metric functions |
-| `matplotlib` | No | Saving the Random Forest feature importance bar chart to PNG (`matplotlib.use("Agg")` for headless rendering) |
-| `seaborn` | No | Used in `notebooks/01_eda.ipynb` for EDA visualizations (not imported in any `.py` file) |
-| `fastapi` | No | Web framework for the prediction API; provides routing, request validation, and auto-generated `/docs` |
-| `uvicorn` | No | ASGI server used to run the FastAPI app |
-| `joblib` | No | Serializing and loading all model artifacts (`.pkl` files) |
-| `python-multipart` | No | Required by FastAPI to support form data parsing (listed in `requirements.txt`, not directly imported) |
-| `pydantic` | No (FastAPI dependency) | `BaseModel` and `Field` used to define and validate the `CustomerData` request schema in `api/main.py` |
-| `pathlib` | stdlib | Path construction in `preprocess.py`, `train.py`, and `api/main.py` |
-| `typing` | stdlib | `Optional[float]` used for `TotalCharges` field in `CustomerData` |
-| `json` | stdlib | Writing `model_info.json` in `train.py` |
-| `datetime` | stdlib | `date.today().isoformat()` for the training date in `model_info.json` |
+| `pandas` | Unpinned | DataFrame operations throughout preprocessing, training, SQL query execution, and API inference |
+| `numpy` | Unpinned | Numeric array manipulation and sigmoid math in `calibrated_pipeline.py`, `explain.py`, and `genai_explainer.py` |
+| `scikit-learn` | Unpinned | `train_test_split`, `StandardScaler`, `LogisticRegression`, `RandomForestClassifier`, and calibration estimators |
+| `scipy` | Unpinned | Statistical hypothesis testing (`chi2_contingency`, `pointbiserialr`) in `model/root_cause_analysis.py` |
+| `shap` | `>=0.45.0` | `TreeExplainer` feature attribution and customer-level waterfall explanations in `model/explain.py` |
+| `google-genai` | `>=2.0.0` | Official Google GenAI Python SDK (`from google import genai`) powering `model/genai_explainer.py` with Gemini 2.5 Flash |
+| `fastapi` | Unpinned | Web framework serving `/predict` and `/explain` endpoints, request validation, and OpenAPI documentation |
+| `uvicorn` | Unpinned | Production ASGI web server running the FastAPI application |
+| `joblib` | Unpinned | Serializing and loading production and calibrated pipeline artifacts (`.pkl` files) |
+| `python-dotenv` | `>=1.0.0` | Loading local `.env` configuration securely without committing secrets |
+| `pydantic` | Unpinned (FastAPI dep) | Pydantic v2 schemas (`CustomerData`, `ExplainRequest`, `ExplainResponse`, `RetentionExplanation`) |
+| `python-multipart` | Unpinned | Form data parsing support in FastAPI |
+| `matplotlib` | Unpinned | Saving feature importance chart (`model/feature_importance.png`) and calibration curve figures |
+| `seaborn` | Unpinned | Used in `notebooks/01_eda.ipynb` for exploratory data analysis charts |
+| `pathlib` | stdlib | Robust, cross-platform filesystem path resolution relative to repository root |
+| `typing` | stdlib | Type annotations (`Optional`, `Dict`, `List`, `Union`, `Any`) |
+| `json` | stdlib | Serializing metadata and evaluation metrics |
+| `datetime` | stdlib | Stamping ISO date formats |
 
-### Frontend (`dashboard/`)
+### Frontend Dashboard (`dashboard/`)
 
-| Tool | Source | Used for |
+| Tool | Source | Used For |
 |---|---|---|
-| HTML5 | Static file | Page structure and form markup |
-| CSS3 | Static file | All layout, theming, animations, and responsive breakpoints |
-| Vanilla JavaScript (ES2020) | Static file | Form handling, `fetch()` API calls, DOM updates, chart rendering |
-| Chart.js `4.4.0` | CDN (`cdn.jsdelivr.net`) | Doughnut chart for prediction result; three bar charts for EDA insights |
-| Inter (font) | Google Fonts CDN | Body and heading typography |
+| HTML5 | Static file (`index.html`) | Semantic page structure, dual-action buttons, tab navigation, and result containers |
+| CSS3 | Static file (`style.css`) | Modern glassmorphic theme, responsive breakpoints, metric cards, and shimmer animations |
+| Vanilla JavaScript (ES2020) | Static file (`script.js`) | Dynamic API URL resolution, dual API dispatch, tab switching, and count-up animations |
+| Chart.js `4.4.0` | CDN (`cdn.jsdelivr.net`) | Interactive doughnut prediction chart and three EDA benchmark bar charts |
+| Inter (Font) | Google Fonts CDN | High-legibility typography across body text, badges, and headers |
 
 ---
 
@@ -357,39 +361,49 @@ Accepts a JSON body matching the `CustomerData` Pydantic model. All fields requi
 
 ---
 
-## 8. Testing Performed
+## 8. Automated Testing & Verification Framework
 
-No formal test files (e.g. `pytest` test suite, `test_*.py` files) exist in the project. All testing was manual or ad-hoc via direct API calls and browser interaction.
+The platform includes three dedicated automated test suites located in `model/experiments/` that validate machine learning explainability, GenAI guardrails, and full-stack API integration without modifying model weights or re-training:
 
-### API validation — direct HTTP calls
+### 1. SHAP Customer-Level Explainability Suite (`model/experiments/validate_shap.py`)
+- Evaluates `CustomerExplainer` across 4 diverse customer profiles (High Risk, Low Risk, Categorical Profile, Boundary Edge Case).
+- **Additivity Verification:** Verifies that model base value plus the sum of all feature SHAP attributions exactly reconstructs the model output:
+  $$\text{Reconstructed Output} = \phi_0 + \sum_{i=1}^M \phi_i = p_{\text{raw}}$$
+  Verified additivity discrepancy: **$0.00\text{e}+00$ across all 4 profiles**.
+- **Output Artifact:** Persists evaluation results to `model/experiments/shap_validation_results.json`.
 
-A temporary Python script (`test_low_risk.py`) was written using `urllib.request` to POST the low-risk profile payload directly to `http://127.0.0.1:8001/predict` (note: port 8001, not 8000 — port 8000 was blocked by a Windows socket permission error during the session). The script was deleted after use. Confirmed result:
+### 2. GenAI Unit & Guardrail Test Suite (`model/experiments/validate_genai_explainer.py`)
+Executes 15 focused capability, reliability, and security checks:
+1. Clean module import without requiring an API key or triggering network calls.
+2. Graceful rejection of missing, empty, or placeholder API keys (`GenAIConfigurationError`).
+3. Template validation verifying `.env.example` contains only placeholders and `.gitignore` ignores `.env`.
+4. Robust dummy-key redaction across arbitrary secret formats (`AIza`, `AQ.`, `sk-`, `Bearer`, `?key=`).
+5. HTTP timeout propagation to the official `google-genai` client options (`timeout_seconds = 45.0s`).
+6. Mocked provider timeout handling (`GenAIProviderError`).
+7. Pre-flight input validation catching NaNs, infinities, and out-of-bounds probabilities before API requests.
+8. Defensive pipeline type checking (rejection of uncalibrated pipelines or incompatible explainers).
+9. Semantic evidence grounding (rejection of hallucinated drivers not present in input SHAP evidence).
+10. Rejection of unsupported claims (unauthorized discounts, guarantees, or fabricated customer facts).
+11. Deterministic fallback generation when `allow_fallback=True`.
+12. Strict prompt metric separation (preventing scale mixing between calibrated and uncalibrated scores).
+13. Risk-tier boundary isolation (`calibrated` vs legacy conventions).
+14. End-to-end schema validation against `RetentionExplanation` using mocked structured responses.
+15. Verification of zero side-effects on serialized model artifacts.
 
-```json
-{"churn_prediction": "No", "churn_probability": 0.0044, "risk_level": "Low"}
-```
-
-### Manual browser testing — three risk profiles
-
-| Profile | Key inputs | Returned probability | Risk badge |
-|---|---|---|---|
-| High risk | tenure=2, Month-to-month, Fiber optic, Electronic check, MultipleLines=Yes, no security/support | ~82.3% | High |
-| Medium risk | tenure=24, One year, mixed services | ~61.3% | Medium |
-| Low risk | tenure=60, Two year, DSL, OnlineSecurity=Yes, TechSupport=Yes, Mailed check | 0.44% | Low |
-
-The Medium result (61.3%) confirmed the 33–66% band is reachable in practice. The difference between the 61.3% result (MultipleLines=No) and the 82.3% result (MultipleLines=Yes) for otherwise similar high-risk profiles was identified and explained as a real model difference, not a bug.
-
-### Error handling validation
-
-Confirmed by code inspection (`script.js`): when `fetch()` throws a `TypeError` with "fetch" in the message (the browser's connection-refused error), `showError()` is called with the message "Cannot reach the API. Make sure the FastAPI server is running on http://127.0.0.1:8000", which renders visibly in the `#form-error` div. Not a silent console-only failure.
-
-### Chart redraw validation
-
-Confirmed by code inspection (`script.js`): `renderDoughnut()` calls `doughnutChart.destroy()` before creating a new `Chart` instance on every prediction. The module-level `doughnutChart` variable is reassigned each time. No ghosting or overlapping rings possible.
-
-### Known environment issue
-
-Port 8000 was blocked on the development machine by a Windows socket permission error (`[WinError 10013]`). The API was run on port 8001 instead (`uvicorn api.main:app --reload --port 8001`). The dashboard `API_URL` constant in `script.js` still points to `http://127.0.0.1:8000` — this would need updating if port 8001 is used consistently.
+### 3. Full-Stack FastAPI Integration Suite (`model/experiments/validate_api_integration.py`)
+A comprehensive 12-point automated test suite running against the live FastAPI application:
+1. Service root (`/`) and health check (`/health`) endpoints.
+2. Baseline `POST /predict` input/output contract preservation (verifying exact Logistic Regression predictions).
+3. `POST /explain` input validation (rejecting missing attributes or invalid types with HTTP 422).
+4. Operational decision threshold validation (defaults to `0.27`, accepts valid float overrides, rejects $\notin [0.0, 1.0]$).
+5. Strict metric scale decoupling (confirming raw Random Forest score $\ne$ Platt-calibrated probability).
+6. Customer-level SHAP feature attribution extraction (validating risk driver and protective factor vectors).
+7. End-to-end execution with mocked successful Gemini structured responses.
+8. Missing API key handling (`allow_fallback=True` returns HTTP 200 with fallback; `allow_fallback=False` returns HTTP 503).
+9. Simulated provider network failure/timeout handling (`allow_fallback=True` returns HTTP 200 with fallback; `allow_fallback=False` returns HTTP 502).
+10. Complete secret sanitization verifying zero credentials or stack traces in HTTP responses and logs.
+11. Incompatible pipeline object defensive rejection.
+12. Model artifact immutability verification.
 
 ---
 
@@ -454,38 +468,77 @@ Phase 3D connects the experimental machine learning models and GenAI service dir
   - `fallback_used`: Boolean indicating if deterministic fallback was returned.
   - `model_version`: LLM model identifier or `"deterministic-fallback"`.
 
-### 3. Local Setup & Execution (Windows PowerShell)
+### 3. Local Setup & Execution Guide (Windows PowerShell)
 
 ```powershell
-# 1. Activate virtual environment
+# 1. Clone repository and navigate
+git clone https://github.com/Varundeep09/Churn-Prediction-AI-Explanation.git
+cd Churn-Prediction-AI-Explanation
+
+# 2. Virtual environment setup
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+python -m venv venv
 .\venv\Scripts\Activate.ps1
+pip install -r requirements.txt
 
-# 2. Configure Gemini API Key (optional - service falls back gracefully if omitted)
-# In PowerShell:
-$env:GEMINI_API_KEY = "your_actual_gemini_api_key"
+# 3. Securely configure Gemini API Key (optional)
+Copy-Item .env.example .env
+# Open .env in a local text editor and enter your key:
+# GEMINI_API_KEY=your_new_gemini_api_key_here
+# GEMINI_MODEL=gemini-2.5-flash
+# Note: Never share or commit your API key. If omitted, the service falls back gracefully.
 
-# 3. Start the FastAPI backend
-.\venv\Scripts\uvicorn.exe api.main:app --reload --host 127.0.0.1 --port 8000
+# 4. Run automated test suites
+python model/experiments/validate_shap.py
+python model/experiments/validate_genai_explainer.py
+python model/experiments/validate_api_integration.py
 
-# 4. In a separate terminal, serve the dashboard
+# 5. Start the FastAPI backend
+uvicorn api.main:app --reload --port 8000
+
+# 6. In a separate PowerShell terminal, serve the dashboard
 python -m http.server 3000 --directory dashboard
 # Open http://127.0.0.1:3000 in your browser
 ```
 
-### 4. Integration Test Suite (`model/experiments/validate_api_integration.py`)
+---
 
-A dedicated 12-point automated integration test suite validates:
-1. Root (`/`) and health (`/health`) endpoints.
-2. Baseline `/predict` input/output contract preservation.
-3. Schema validation and input rejection on `/explain`.
-4. Decision threshold defaults, overrides, and invalid boundary rejection.
-5. Score decoupling between raw Random Forest score and calibrated probability.
-6. SHAP feature attribution integration.
-7. Mocked successful Gemini structured generation.
-8. Missing API key handling (`allow_fallback=True` returns fallback; `allow_fallback=False` returns HTTP 503).
-9. Provider network timeout handling (`allow_fallback=True` returns fallback; `allow_fallback=False` returns HTTP 502).
-10. Secret sanitization across all errors and logs.
-11. Incompatible pipeline defensive guards.
-12. Model artifact immutability.
+## 11. Root Cause Analysis, SQL Analytics & Retention Playbook
+
+### 1. Statistical Hypothesis Testing (`model/root_cause_analysis.py`)
+
+To identify features with strong statistical dependencies on churn, formal tests were conducted across the IBM Telco population:
+- **Categorical Features:** Pearson's Chi-Square ($\chi^2$) Test of Independence with Cramér's V effect size.
+- **Continuous Features:** Point-Biserial Correlation ($r$) with two-tailed p-values.
+
+| Feature | Feature Type | Statistical Test | Test Statistic | p-value | Effect Size | Key Finding |
+|---|---|---|---|---|---|---|
+| `Contract` | Categorical | Pearson's $\chi^2$ | $\chi^2 = 1179.55$ | $< 0.0001$ | Cramér's $V = 0.410$ | Month-to-month contracts have the highest statistical association with customer attrition. |
+| `tenure` | Numeric | Point-Biserial | $r = -0.3540$ | $< 0.0001$ | $\|r\| = 0.354$ | Strong protective association: churn risk decreases significantly with each month of tenure. |
+| `OnlineSecurity` | Categorical | Pearson's $\chi^2$ | $\chi^2 = 846.68$ | $< 0.0001$ | Cramér's $V = 0.347$ | Absence of security features associates with elevated attrition. |
+| `TechSupport` | Categorical | Pearson's $\chi^2$ | $\chi^2 = 824.93$ | $< 0.0001$ | Cramér's $V = 0.343$ | Unresolved customer friction in the absence of tech support associates with departures. |
+| `PaymentMethod` | Categorical | Pearson's $\chi^2$ | $\chi^2 = 645.43$ | $< 0.0001$ | Cramér's $V = 0.303$ | Electronic check billing associates with 45.3% churn vs ~15% for automated payments. |
+
+> **Methodological Note:** These statistical tests measure observational dependency and association; they do not establish causal intervention mechanisms.
+
+### 2. SQL Analytics Suite (`sql/`)
+
+A dedicated SQLite data warehouse (`sql/churn.db`) was built to execute analytical SQL queries answering core revenue and retention questions:
+1. **`churn_by_tenure_cohort.sql`:** First-year customers exhibit a 47.68% churn rate, dropping to 6.61% for accounts with 5+ years of tenure.
+2. **`churn_by_contract_type.sql`:** Month-to-month churn rate is 42.71% compared to 2.85% for two-year contracts.
+3. **`churn_by_payment_method.sql`:** Electronic check users churn at 45.29% vs 15.25% for automatic credit card billing.
+4. **`churn_by_customer_value.sql`:** High-value customers (>$70/month) total 3,581 accounts representing **$323,148.10/month in total recurring revenue** with a 35.38% churn rate.
+5. **`churn_by_service_combo.sql`:** Fiber optic users lacking both Tech Support and Online Security churn at 55.01% (vs 17.05% baseline).
+6. **`high_value_at_risk.sql`:** Identifies an actionable high-priority target list of **814 accounts** (month-to-month, tenure < 12 months, charges > $70/month) representing **$67,418.90/month in immediate revenue at risk**.
+
+### 3. Churn Retention Playbook (`model/churn_playbook.json`)
+
+Translates statistical findings and SQL analytics into 6 structured retention interventions integrated into the prediction dashboard:
+1. **Critical Risk — High-Value New Customer:** Priority retention outreach within 48 hours; contract upgrade discount or loyalty bill credit ($67,418.90/month immediate revenue at risk).
+2. **Critical Risk — Unsupported Fiber Customer:** Complimentary 90-day trial of Tech Support & Online Security bundle; onboarding check-in call.
+3. **High Risk — Manual Payment, Month-to-Month:** $5–$10 bill credit incentive to migrate from Electronic Check to automated credit card/ACH billing.
+4. **Moderate Risk — Early Tenure, Standard Plan:** Annual renewal discount offered before reaching peak churn window (13–24 months).
+5. **Low Risk — Long-Term Contract Holder:** Loyalty rewards, milestone recognition, and premium service upsells.
+6. **Low Risk — Fully Protected Customer:** Service satisfaction surveys and testimonial/advocacy outreach.
 
 

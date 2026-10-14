@@ -201,7 +201,7 @@ form.addEventListener("submit", async (e) => {
     switchTab("baseline");
   } catch (err) {
     if (err instanceof TypeError && err.message.includes("fetch")) {
-      showError("Cannot reach the API. Make sure the FastAPI server is running on http://127.0.0.1:8000");
+      showError(`Cannot reach the API. Make sure the FastAPI server is running on ${API_BASE}`);
     } else {
       showError(err.message || "An unexpected error occurred during prediction.");
     }
@@ -240,7 +240,7 @@ explainBtn.addEventListener("click", async (e) => {
     switchTab("ai");
   } catch (err) {
     if (err instanceof TypeError && err.message.includes("fetch")) {
-      showError("Cannot reach the API. Make sure the FastAPI server is running on http://127.0.0.1:8000");
+      showError(`Cannot reach the API. Make sure the FastAPI server is running on ${API_BASE}`);
     } else {
       showError(err.message || "An unexpected error occurred during AI retention analysis.");
     }

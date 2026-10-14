@@ -1,12 +1,33 @@
-# Python & Environment
+# Python & Virtual Environments
 venv/
+.venv/
+env/
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+
+# Secrets & Local Configurations
 .env
+.env.*
+!.env.example
+
+# Operating System & IDE Clutter
 .DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Testing, Logs & Profiling
+*.log
+.pytest_cache/
 catboost_info/
 
-# Intermediate train/test split data files
+# Intermediate train/test split data files (reproducible via model/preprocess.py)
 model/X_*.pkl
 model/y_*.pkl
 

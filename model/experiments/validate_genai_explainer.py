@@ -104,7 +104,7 @@ def run_validation():
     # Verify no real key or active credential pattern is in .env.example
     for line in env_example_content.splitlines():
         if line.startswith("GEMINI_API_KEY"):
-            assert "your_gemini_api_key_here" in line or "placeholder" in line, (
+            assert "your_new_gemini_api_key_here" in line or "your_gemini_api_key_here" in line or "placeholder" in line, (
                 f"Active credential found in .env.example: {line}"
             )
             assert not re.search(r"AQ\.[0-9A-Za-z\-_]{20,}", line), (

@@ -113,20 +113,41 @@ Exploratory analysis was conducted in `notebooks/01_eda.ipynb`:
 
 ---
 
-## 3. Modeling & Benchmark Results (`model/train.py`)
+## 3. Modeling & Benchmark Results (`model/train.py` & `model/experiments/`)
 
-Two classification models were trained and benchmarked:
+### Initial Baseline Benchmark (`model/train.py` — Test Set: N = 1,407)
+
+Two standard classification models were initially trained and benchmarked:
 - **Logistic Regression** (`max_iter=1000`)
-- **Random Forest Classifier** (`n_estimators=200`, `random_state=42`)
-
-### Benchmark Comparison (Test Set: N = 1,407)
+- **Unweighted Random Forest Classifier** (`n_estimators=200`, `random_state=42`)
 
 | Model | Accuracy | Precision | Recall | F1-Score | Status |
 |---|---:|---:|---:|---:|---|
-| **Logistic Regression** | **0.8045** | **0.6505** | **0.5722** | **0.6088** | **Selected / Deployed** |
-| Random Forest Classifier | 0.7868 | 0.6225 | 0.5027 | 0.5562 | Baseline Comparison |
+| **Logistic Regression** | **0.8045** | **0.6505** | **0.5722** | **0.6088** | **Selected / Production Baseline** |
+| Unweighted Random Forest | 0.7868 | 0.6225 | 0.5027 | 0.5562 | Baseline Comparison |
 
-* **Selection Rationale:** Logistic Regression won decisively across all 4 evaluation metrics. It captured 26 more true churners than Random Forest (yielding a +6.95% higher Recall) with superior precision and calibration.
+* **Selection Rationale:** Logistic Regression outperformed the unweighted Random Forest across all 4 evaluation metrics, capturing 26 more true churners with superior precision and calibration.
+
+### Production Baseline vs. Experimental Calibrated Random Forest
+
+In Phase 3, an experimental **Balanced Random Forest** (`n_estimators=200`, `max_depth=8`, `min_samples_leaf=4`, `class_weight='balanced'`, `random_state=42`) with a **Platt Scaling** calibration layer was developed in `model/experiments/` to power the Explainable AI and GenAI Retention Intelligence engine:
+
+| Evaluation Metric | Production Model: Logistic Regression (`model/churn_model.pkl`) | Experimental Model: Platt-Calibrated Balanced RF (`model/experiments/calibrated_pipeline_refactored.pkl`) |
+|---|:---:|:---:|
+| **Operating Threshold** | `0.50` (Standard) | `0.50` (Raw RF Scale) / `0.27` (Calibrated Scale) |
+| **Accuracy** | **80.45%** | 73.92% |
+| **Precision** | **65.05%** | 50.59% |
+| **Recall** | 57.22% | **79.95%** |
+| **F1-Score** | 60.88% | **61.97%** |
+| **ROC-AUC** | **0.8407** | 0.8390 |
+| **PR-AUC** | **0.6510** | 0.6450 |
+| **False Positives (FP)** | **115** | 292 |
+| **False Negatives (FN)** | 160 | **75** |
+| **Platt Brier Score** | — | **0.1347** (Cross-Validation) / 0.1393 (Holdout) |
+
+* **Critical Model Trade-Off Analysis:**  
+  The experimental Balanced Random Forest is **not** universally more accurate than Logistic Regression. By weighting minority churn cases, it achieves a significantly higher **Recall (+22.73%)**, capturing 85 additional at-risk customers (299 vs. 214 true positives out of 374 churners). However, this sensitivity comes at the cost of **177 additional false positives** (292 vs. 115) and a lower overall accuracy (73.92% vs. 80.45%).  
+  **Decision:** Logistic Regression is preserved as the production model for `/predict` to avoid unnecessary intervention costs, while the Calibrated Random Forest powers `/explain` for customer-level risk attribution and retention intelligence.
 
 ---
 
@@ -293,14 +314,26 @@ A responsive single-page application built with modern HTML5, CSS3, and ES2020 J
 
 ---
 
-## 9. How to Run the Project
+## 9. How to Run the Project (Windows PowerShell Setup)
 
-Follow these exact steps in **Windows PowerShell**:
+Follow these exact steps from a clean clone in **Windows PowerShell**:
 
-### Step 1: Environment Setup
+### Step 0: Clone Repository & Navigate
 ```powershell
+git clone https://github.com/Varundeep09/Churn-Prediction-AI-Explanation.git
+cd Churn-Prediction-AI-Explanation
+```
+
+### Step 1: Virtual Environment Setup
+```powershell
+# If execution policy prevents script activation, run:
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
+# Create and activate Python virtual environment
 python -m venv venv
 .\venv\Scripts\Activate.ps1
+
+# Install exact requirements
 pip install -r requirements.txt
 ```
 
@@ -308,33 +341,73 @@ pip install -r requirements.txt
 ```powershell
 # Copy the environment template
 Copy-Item .env.example .env
-
-# Edit .env and supply your API key from Google AI Studio (https://aistudio.google.com/)
-# Example .env content:
-# GEMINI_API_KEY=your_actual_key_here
-# GEMINI_MODEL=gemini-2.5-flash
 ```
-> **Security Note:** `.env` is listed in `.gitignore` and will never be committed to git. If no key is configured, the application runs seamlessly in deterministic fallback mode or serves the baseline production endpoint.
+> **Security Guardrail:** Open `.env` in your local text editor and privately enter your API key:
+> ```ini
+> GEMINI_API_KEY=your_new_gemini_api_key_here
+> GEMINI_MODEL=gemini-2.5-flash
+> ```
+> **Never** paste your actual API key into chat prompts, terminal commands, or version control. `.env` is strictly ignored by Git in `.gitignore`.  
+> *Note:* If you do not configure an API key, the system runs with 100% functionality using verified deterministic rule-based retention explanations (`fallback_used: true`).
 
 ### Step 3: Run Validation & Integration Test Suites
+Execute all three verification suites without modifying model weights or artifacts:
 ```powershell
-# Run the Phase 3C GenAI explainer test suite (15 unit tests)
+# 1. Verify SHAP feature attribution additivity and customer profiles
+python model/experiments/validate_shap.py
+
+# 2. Verify GenAI unit tests, guardrails, fallback, and secret sanitization (15 checks)
 python model/experiments/validate_genai_explainer.py
 
-# Run the Phase 3D Full-Stack API integration test suite (12 tests)
+# 3. Verify FastAPI full-stack integration, schemas, threshold bounds, and baseline isolation (12 tests)
 python model/experiments/validate_api_integration.py
 ```
 
-### Step 4: Start the FastAPI Backend
+### Step 4: Start the FastAPI Backend Service
 ```powershell
 uvicorn api.main:app --reload --port 8000
 ```
-- Real-time API: `http://127.0.0.1:8000`
-- Interactive OpenAPI / Swagger Documentation: `http://127.0.0.1:8000/docs`
-- Health check: `http://127.0.0.1:8000/health`
+- Real-time API Service: `http://127.0.0.1:8000`
+- Interactive Swagger / OpenAPI Documentation: `http://127.0.0.1:8000/docs`
+- Service Health Check: `http://127.0.0.1:8000/health`
 
 ### Step 5: Launch the Web Dashboard
-Open `dashboard/index.html` directly in any modern browser (or serve via VS Code Live Server / `python -m http.server 3000`).
+In a **separate** PowerShell terminal window:
+```powershell
+python -m http.server 3000 --directory dashboard
+```
+Open **`http://127.0.0.1:3000`** in any modern web browser (or double-click `dashboard/index.html` to open directly via file protocol).
+
+### Step 6: Stopping the Local Processes
+To stop the FastAPI backend or HTTP server, press `Ctrl + C` in their respective PowerShell terminal windows.
+
+---
+
+### Windows Troubleshooting Guide
+
+1. **Port 8000 in Use (`[WinError 10013]` or `[Errno 48]`):**
+   If port 8000 is occupied by another local service or Windows socket lock:
+   ```powershell
+   # Start Uvicorn on an alternative port (e.g., 8001):
+   uvicorn api.main:app --reload --port 8001
+   ```
+   The dashboard dynamically adapts: open `http://127.0.0.1:3000`, open Developer Tools (`F12`), switch to the Console tab, and configure the target port:
+   ```javascript
+   localStorage.setItem('API_BASE_URL', 'http://127.0.0.1:8001');
+   location.reload();
+   ```
+2. **PowerShell Script Activation Error (`cannot be loaded because running scripts is disabled`):**
+   ```powershell
+   Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+   .\venv\Scripts\Activate.ps1
+   ```
+3. **Missing or Broken Dependencies:**
+   ```powershell
+   python -m pip check
+   pip install -r requirements.txt --upgrade
+   ```
+4. **Missing Gemini API Key Error (HTTP 503):**
+   The dashboard requests explanations with `allow_fallback: true` by default. If calling `/explain` directly via curl/Swagger with `allow_fallback: false` and no API key is set, the API returns HTTP 503. Set `"allow_fallback": true` or configure `GEMINI_API_KEY` in `.env`.
 
 ---
 
@@ -344,8 +417,10 @@ Open `dashboard/index.html` directly in any modern browser (or serve via VS Code
    - The raw Random Forest tree score ($\in [0, 1]$) and Platt-calibrated empirical probability ($\in [0, 1]$) are presented separately.
    - Raw SHAP values describe feature attributions on the tree model's uncalibrated score, not percentage point shifts on the calibrated scale.
 2. **Strict Non-Causal Grounding:**
-   - Prompts and UI disclaimers explicitly instruct stakeholders that SHAP values and model associations do not establish causal relationships (e.g., forcing a customer onto a two-year contract does not automatically eliminate underlying dissatisfaction).
+   - Prompts, documentation, and UI disclaimers explicitly instruct stakeholders that SHAP values and statistical tests (Chi-Square, Point-Biserial) establish observational associations, not causal relationships (e.g., forcing a customer onto a two-year contract does not automatically eliminate underlying service dissatisfaction).
 3. **Zero Secret Leakage:**
    - Exception handlers across backend endpoints and GenAI services automatically scrub API keys, credentials, and raw stack traces before returning client responses.
 4. **Production Baseline Immutability:**
-   - `model/churn_model.pkl` and `/predict` remain 100% frozen and operational. Experiments are completely encapsulated in `/explain` and `model/experiments/`.
+   - `model/churn_model.pkl` and `/predict` remain 100% frozen, independent, and operational. Experiments are completely encapsulated in `/explain` and `model/experiments/`.
+5. **Absence of Live Billable API Testing:**
+   - Routine test suites rely on mocked Gemini responses and deterministic offline fallbacks to avoid billable API requests. Live Gemini calls are executed only when an authorized key is configured in `.env` by the developer.
